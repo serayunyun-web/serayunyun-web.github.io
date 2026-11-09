@@ -40,7 +40,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <section className="product-detail-hero" aria-labelledby="product-title">
           <ProductGallery images={product.gallery} productName={product.title} />
           <div className="product-detail-summary">
-            <p className="eyebrow">Product Detail</p>
             <span className="placeholder-badge">暫存內容</span>
             <h1 id="product-title">{product.title}</h1>
             <p className="product-detail-lead">{product.description}</p>
