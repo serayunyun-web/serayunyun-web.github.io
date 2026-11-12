@@ -33,7 +33,8 @@ export function QuoteCatalog() {
   const visibleFields = useMemo(() => formTypeId ? fieldsByProduct[formTypeId].filter((field) => !field.when || field.when.values.includes(values[field.when.field])) : [], [formTypeId, values]);
   const numericQuantity = Number(quantity);
   const quantityIsValid = Number.isSafeInteger(numericQuantity) && numericQuantity > 0;
-  const readiness = product ? evaluateQuoteReadiness(product.slug, quantityIsValid ? numericQuantity : 0, values) : null;
+  const freeTextFieldIds = visibleFields.filter((field) => field.type === "textarea").map((field) => field.id);
+  const readiness = product ? evaluateQuoteReadiness(product.slug, quantityIsValid ? numericQuantity : 0, values, freeTextFieldIds) : null;
   const shipping = shippingOptions.find((option) => option.id === shippingId);
   const summary = visibleFields.filter((field) => values[field.id]);
 
@@ -68,6 +69,12 @@ export function QuoteCatalog() {
         })}
       </div>
     </section>
+
+    {product && !formTypeId && <section className="quote-specification page-container" id="quote-specification" ref={specificationRef} tabIndex={-1}>
+      <div className="quote-section-heading"><div><span>02</span><h2>{product.title}</h2></div></div>
+      <div className="quote-price-status"><small>MANUAL QUOTE</small><strong>此產品目前需人工協助</strong><p>網站尚未建立此產品的查價規格，請直接填寫需求，由專人協助確認。</p></div>
+      <Link className="button button-primary quote-order-link" href={`/order?product=${product.slug}`}>前往填寫人工詢價</Link>
+    </section>}
 
     {product && formTypeId && <section className="quote-specification page-container" id="quote-specification" ref={specificationRef} tabIndex={-1}>
       <div className="quote-section-heading"><div><span>02</span><h2>{product.title}查價規格</h2></div><p>目前沿用「{formType?.name}」選項；價目表對照將於資料庫串接前完成。</p></div>

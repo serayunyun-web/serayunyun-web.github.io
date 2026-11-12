@@ -40,7 +40,9 @@ const slides = [
 const AUTOPLAY_DELAY = 7000;
 const SWIPE_THRESHOLD = 48;
 
-export function HomeHeroCarousel() {
+type HomeHeroCarouselProps = { headingLevel?: "h1" | "h2"; className?: string };
+
+export function HomeHeroCarousel({ headingLevel: Heading = "h1", className = "" }: HomeHeroCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isFocusWithin, setIsFocusWithin] = useState(false);
@@ -79,7 +81,7 @@ export function HomeHeroCarousel() {
     <section
       aria-label="首頁精選內容"
       aria-roledescription="輪播"
-      className="home-hero-carousel"
+      className={`home-hero-carousel ${className}`.trim()}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsFocusWithin(false);
       }}
@@ -110,7 +112,7 @@ export function HomeHeroCarousel() {
             <div className="home-hero-shade" aria-hidden="true" />
             <div className="page-container home-hero-content">
               <div className="home-hero-copy">
-                <h1>{slide.title}</h1>
+                <Heading>{slide.title}</Heading>
                 <p className="hero-lead">{slide.description}</p>
                 <div className="hero-actions">
                   <Link className="button button-primary" href={slide.primary.href}>{slide.primary.label} <span aria-hidden="true">→</span></Link>

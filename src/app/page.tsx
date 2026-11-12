@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import { HomeHero3D } from "@/components/home-hero-3d";
 import { HomeHeroCarousel } from "@/components/home-hero-carousel";
-import { PlaceholderArtwork } from "@/components/placeholder-artwork";
 import { ProductCard } from "@/components/product-card";
 import { homeNews } from "@/data/home-news";
 import { featuredProducts } from "@/data/site";
@@ -19,7 +19,13 @@ const processSteps = [
 export default function Home() {
   return (
     <main>
-      <HomeHeroCarousel />
+      <HomeHero3D />
+
+      <section className="home-section banner-feature-section" aria-label="鴻萊精選服務">
+        <div className="page-container">
+          <HomeHeroCarousel className="banner-feature" headingLevel="h2" />
+        </div>
+      </section>
 
       <section className="home-section categories-section" aria-labelledby="categories-title">
         <div className="page-container">
@@ -60,18 +66,6 @@ export default function Home() {
                 <Link href={item.href}>{item.title}<span aria-hidden="true">→</span></Link>
               </article>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="home-section company-section" aria-labelledby="company-title">
-        <div className="page-container company-grid">
-          <div className="company-art"><PlaceholderArtwork label="公司服務形象佔位圖" tone="teal" /></div>
-          <div className="company-copy">
-            <p className="eyebrow">About Hong Lai</p>
-            <h2 id="company-title">專注印刷後加工與裝訂需求</h2>
-            <p>鴻萊興業以印刷後加工與裝訂服務為核心，承作論文裝訂、證書夾、施工本、菜單及客製加工需求。從個人少量製作到企業與同業合作，實際材質、規格、價格與交期皆在需求送出後由專人逐項確認，協助客戶整理合適的製作方式。</p>
-            <div className="company-actions"><Link className="button button-primary" href="/business">企業合作</Link><Link className="text-link" href="/contact">聯絡我們 <span aria-hidden="true">→</span></Link></div>
           </div>
         </div>
       </section>

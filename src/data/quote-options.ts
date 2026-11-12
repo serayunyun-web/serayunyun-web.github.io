@@ -20,7 +20,7 @@ export type QuoteReadiness = {
   message: string;
 };
 
-export function evaluateQuoteReadiness(productSlug: string, quantity: number, values: Record<string, string>): QuoteReadiness {
+export function evaluateQuoteReadiness(productSlug: string, quantity: number, values: Record<string, string>, freeTextFieldIds: readonly string[] = []): QuoteReadiness {
   if (productSlug === "menu-production") {
     return {
       mode: "manual",
@@ -43,6 +43,15 @@ export function evaluateQuoteReadiness(productSlug: string, quantity: number, va
       mode: "manual",
       title: "需要人工估價",
       message: "目前包含自訂或尚未確定的規格，網站不會推測價格，請由專人確認。",
+    };
+  }
+
+  const hasFreeTextRequirement = freeTextFieldIds.some((id) => values[id]?.trim());
+  if (hasFreeTextRequirement) {
+    return {
+      mode: "manual",
+      title: "需要人工估價",
+      message: "已填寫文字型特殊需求，需由專人確認內容後才能估價。",
     };
   }
 

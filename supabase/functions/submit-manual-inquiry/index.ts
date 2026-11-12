@@ -4,21 +4,23 @@ import { allowedOrigin, corsHeaders, response } from "../_shared/http.ts";
 import { email, isoDate, phone, positiveInteger, submissionFingerprints, text, uuid, type JsonObject } from "../_shared/validation.ts";
 
 const products = {
-  "thesis-binding": ["prd-thesis-binding", "論文裝訂", "book-binding"],
+  "thesis-binding": ["prd-thesis-binding", "論文", "book-binding"],
   "certificate-folder": ["prd-certificate-folder", "證書夾", "certificate-folder"],
-  "construction-book": ["prd-construction-book", "施工本", "construction-book"],
-  "menu-production": ["prd-menu-production", "菜單製作", "menu"],
+  "construction-book": ["prd-construction-book", "工程施工本", "construction-book"],
   "engineering-contract": ["prd-engineering-contract", "工程合約書", "book-binding"],
-  "color-perfect-binding": ["prd-color-perfect-binding", "彩色膠裝", "book-binding"],
-  "sewn-binding": ["prd-sewn-binding", "縫線裝訂", "book-binding"],
-  "machine-sewn-binding": ["prd-machine-sewn-binding", "車線裝訂", "book-binding"],
-  "butterfly-book": ["prd-butterfly-book", "蝴蝶書／蝶冊", "book-binding"],
-  "screw-binding": ["prd-screw-binding", "螺絲裝訂", "book-binding"],
-  "file-binder": ["prd-file-binder", "檔案夾／活頁夾", "unsure"],
-  "triangle-desk-calendar": ["prd-triangle-desk-calendar", "三角桌曆", "unsure"],
-  "double-loop-binding": ["prd-double-loop-binding", "雙線圈裝訂", "book-binding"],
-  "ring-binding": ["prd-ring-binding", "環裝裝訂", "book-binding"],
-  "punch-binding": ["prd-punch-binding", "打孔裝冊", "book-binding"],
+  "perfect-binding": ["prd-perfect-binding", "膠裝", "book-binding"],
+  "hardcover": ["prd-hardcover", "精裝", "book-binding"],
+  "sewn-softcover": ["prd-sewn-softcover", "線平裝", "book-binding"],
+  "sewn-hardcover": ["prd-sewn-hardcover", "線精裝", "book-binding"],
+  "exposed-spine-sewn": ["prd-exposed-spine-sewn", "裸背線裝", "book-binding"],
+  "machine-sewn-binding": ["prd-machine-sewn-binding", "車線平裝", "book-binding"],
+  "traditional-thread-binding": ["prd-traditional-thread-binding", "古書線裝", "book-binding"],
+  "saddle-stitch": ["prd-saddle-stitch", "騎馬裝", "book-binding"],
+  "ring-binding": ["prd-ring-binding", "線圈環裝", "book-binding"],
+  "butterfly-book": ["prd-butterfly-book", "蝴蝶平、精裝", "book-binding"],
+  "menu-production": ["prd-menu-production", "菜單螺絲裝", "menu"],
+  "q-rod-hardcover": ["prd-q-rod-hardcover", "Q桿精裝", "book-binding"],
+  "screw-contract": ["prd-screw-contract", "鎖螺絲合約書", "book-binding"],
 } as const;
 
 const customerTypes = new Set(["個人", "公司行號", "學校或行政單位"]);

@@ -23,7 +23,7 @@ export default function ServicesPage() {
         </div>
       </section>
       <ServicesCatalog allFilter={catalogFilter} categories={activeCategories} products={activeProducts} />
-      <section className="samples-entry-section"><div className="page-container samples-entry"><div><p className="eyebrow">Material Library</p><h2>材質與配件樣品</h2><p>查看皮面／膠皮與護角的參考資料。正式照片與編號尚待鴻萊提供，目前以「資料待補」清楚標示。</p></div><Link className="button button-primary" href="/services/samples">前往樣品頁</Link></div></section>
+      <section className="samples-entry-section"><div className="page-container samples-entry"><div><p className="eyebrow">Material Library</p><h2>精裝皮革樣品</h2><p>58 款精裝皮革，適用論文、合約書、菜單、證書夾等所有精裝產品，可依數位燙金或傳統燙金篩選。</p></div><Link className="button button-primary" href="/services/samples">查看皮革樣品</Link></div></section>
     </main>
   );
 }
