@@ -41,7 +41,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         <section className="product-information" aria-labelledby="product-title">
           <dl className="product-spec-list">
-            {product.details.specs.map((group) => <div key={group.label}><dt>{group.label}<span aria-hidden="true">→</span></dt>{group.items.map((item) => <dd key={item}>{item}</dd>)}{group.label === "材質" && leatherCoverSlugs.has(product.slug) && <dd><Link className="product-spec-link" href="/services/samples">查看精裝皮革樣品 →</Link></dd>}</div>)}
+            {product.details.specs.map((group) => <div key={group.label}><dt>{group.label}<span aria-hidden="true">→</span></dt>{group.items.map((item) => <dd key={item}>{item}</dd>)}{(group.label === "材質" || group.label === "結構") && leatherCoverSlugs.has(product.slug) && <dd><Link className="product-spec-link" href="/services/samples">查看精裝皮革樣品 →</Link></dd>}</div>)}
           </dl>
           <div className="product-story">
             {product.details.story.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
@@ -50,8 +50,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         <section className="product-detail-cta" aria-label="詢價與下單">
           <div className="product-detail-actions">
-            <Link className="button button-primary" href={`/quote?product=${product.slug}`}>快速查價</Link>
-            <Link className="button button-secondary" href={`/order?product=${product.slug}`}>線上下單</Link>
+            {product.isOrderable !== false && <>
+              <Link className="button button-primary" href={`/quote?product=${product.slug}`}>快速查價</Link>
+              <Link className="button button-secondary" href={`/order?product=${product.slug}`}>線上下單</Link>
+            </>}
             <Link className="text-link" href={`/contact?product=${product.slug}`}>聯絡詢價 <span aria-hidden="true">→</span></Link>
           </div>
           <ul className="product-detail-notes">{product.details.notes.map((note) => <li key={note}>{note}</li>)}</ul>

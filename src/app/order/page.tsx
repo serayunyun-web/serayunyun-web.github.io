@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { OrderRequestForm } from "@/components/order-request-form";
+import { withBase } from "@/lib/base-path";
 
 export const metadata: Metadata = { title: "線上下單" };
 
@@ -8,7 +9,7 @@ export default function OrderPage() {
   return (
     <main>
       <section className="inner-image-hero order-image-hero">
-        <Image alt="材質、紙張與裝訂規格靈感板" className="inner-image-hero-media" fill priority sizes="100vw" src="/images/inquiry/inquiry-banner-desktop.webp" />
+        <Image alt="材質、紙張與裝訂規格靈感板" className="inner-image-hero-media" fill priority sizes="100vw" src={withBase("/images/inquiry/inquiry-banner-desktop.webp")} />
         <div className="inner-image-hero-shade" aria-hidden="true" />
         <div className="page-container inner-image-hero-content">
           <div className="inner-image-hero-copy">
@@ -19,7 +20,7 @@ export default function OrderPage() {
           </div>
         </div>
       </section>
-      <section className="order-notice page-container"><strong>人工詢價 MVP</strong><span>草稿只保存在瀏覽器；點選正式送出並取得詢價編號後，才代表 staging 已收到資料。這不是正式報價、訂單或工作單。</span></section>
+      <section className="order-notice page-container"><strong>下單流程</strong><span>送出需求後會寄出試算報價單；專人確認規格、金額與交期後，再寄出正式報價與確認連結，你點選確認後訂單才成立。</span></section>
       <OrderRequestForm />
     </main>
   );
