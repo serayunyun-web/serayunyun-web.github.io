@@ -1,24 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { orderableProducts } from "@/data/catalog";
 import { commonFields } from "@/data/order-options";
 import { validateEmail, validatePhone } from "@/lib/form-validation";
 import { ATTACHMENT_ACCEPT, MAX_ATTACHMENTS, attachmentProblem, formatBytes } from "@/lib/attachments";
-import { PHOTOCOPY_SLUG, calculateEstimate, invalidPricingFields, isAutoPriced, shippingChoices } from "@/lib/pricing";
+import { PHOTOCOPY_SLUG, calculateEstimate, invalidPricingFields, isAutoPriced, shippingChoices, visiblePricingFields } from "@/lib/pricing";
 import { blankDraft, readDraft, writeDraft, DRAFT_KEY, type Draft } from "@/lib/order-draft";
 import { saveCheckout } from "@/lib/checkout";
 import { SubmissionError, callPublicFunction, supabaseBrowser } from "@/lib/supabase-public-api";
 import { ProductPicker } from "@/components/product-picker";
-import { CommonInput, ModeSwitch, PriceBreakdown, ShippingPicker, SpecFields, specSummary, visibleManualFields, type FieldMarks } from "@/components/spec-fields";
+import { LeatherSelect } from "@/components/leather-select";
+import { OTHER_COVER, isDigitalFoilLeather, leatherCode, leatherFoilConflict, leatherPickerFor, validLeatherChoice, wantsDigitalFoil } from "@/lib/leather";
+import { CommonInput, ModeSwitch, PriceBreakdown, ShippingPicker, SpecFields, specSummary, visibleManualFields, type DisabledOptions, type FieldMarks } from "@/components/spec-fields";
 
 type PickedFile = { file: File; status: "ready" | "uploading" | "done" | "failed"; error?: string };
 type SubmitResult = { referenceNo: string; emailSent: boolean; priced: boolean };
 /** 已選的規格裡有燙金，就需要填燙金內容。 */
 const needsFoilContent = (values: Record<string, string>) => Object.entries(values).some(([key, value]) => /foil|coverFinish/i.test(key) && value.includes("燙金") && !value.startsWith("不需要"));
-/** 已選的封面是皮面，就需要挑皮面樣品。 */
-const needsLeather = (values: Record<string, string>) => Object.entries(values).some(([key, value]) => /cover/i.test(key) && value.includes("皮"));
 const contactLabels: Record<string, string> = { customerType: "客戶類型", contactName: "聯絡人姓名", phone: "聯絡電話", email: "Email", organization: "公司／學校名稱", line: "LINE ID", address: "配送地址" };
 
 export function OrderRequestForm() {
@@ -85,17 +85,27 @@ export function OrderRequestForm() {
   const filesRequired = product?.slug === PHOTOCOPY_SLUG;
   const unit = filesRequired ? "份" : "本";
   // 一般影印沒有封面、燙金與皮面，數量改稱「影印份數」。
+  // 皮面產品：「封面顏色／樣品編號」改成皮革下拉選單；選「其他」或封面不是皮面時維持文字欄位。
+  const leatherPicker = product ? leatherPickerFor(product.slug, draft.values) : null;
+  const leatherValue = validLeatherChoice(leatherPicker, draft.samples.coverSample);
+  const leatherNeeded = Boolean(leatherPicker) && !leatherValue;
+  const coverColorAsText = !leatherPicker || leatherValue === OTHER_COVER;
+  const traditionalOnly = Boolean(leatherCode(leatherValue)) && !isDigitalFoilLeather(leatherValue);
+  const disabledOptions: DisabledOptions = {};
+  if (product && traditionalOnly) for (const field of visiblePricingFields(product.slug, draft.values)) {
+    if (/foil/i.test(field.id) && field.kind === "select") disabledOptions[field.id] = { options: field.options.filter((option) => option.includes("數位燙金")), reason: `所選皮革 ${leatherCode(leatherValue)} 只能傳統燙金，不能選數位燙金。` };
+  }
+  const chooseLeather = (value: string) => setDraft((current) => ({ ...current, samples: { ...current.samples, coverSample: value } }));
   const shownCommonFields = filesRequired ? commonFields.filter((field) => !["coverColor", "foilContent"].includes(field.id)).map((field) => field.id === "quantity" ? { ...field, label: "影印份數" } : field) : commonFields;
   const carried = new Set(draft.quoteKeys ?? []);
   const foilNeeded = needsFoilContent(draft.values);
-  const leatherNeeded = needsLeather(draft.values) && !draft.samples.coverSample;
   const marks: FieldMarks = {};
   for (const key of carried) marks[key] = "carried";
-  if (carried.size) for (const field of shownCommonFields) if (!carried.has(field.id) && !draft.values[field.id]?.trim()) marks[field.id] = "check";
+  if (carried.size) for (const field of shownCommonFields) if (!carried.has(field.id) && !draft.values[field.id]?.trim() && (field.id !== "coverColor" || coverColorAsText)) marks[field.id] = "check";
   if (foilNeeded && !draft.values.foilContent?.trim()) marks.foilContent = "attention";
   const toConfirm = [
     ...(foilNeeded && !draft.values.foilContent?.trim() ? ["燙金內容（文字、Logo 或校徽）"] : []),
-    ...(leatherNeeded ? ["皮面／膠皮樣品（色號）"] : []),
+    ...(leatherNeeded ? ["封面皮革色號"] : []),
     ...shownCommonFields.filter((field) => marks[field.id] === "check").map((field) => field.label.replace("（選填）", "")),
   ];
   const setContact = (id: string, value: string) => setDraft((current) => ({ ...current, contact: { ...current.contact, [id]: value } }));
@@ -130,6 +140,7 @@ export function OrderRequestForm() {
       if (missing) return { id: `order-${missing.id}`, error: `請填寫「${missing.label}」。` };
     }
     if (!Number.isSafeInteger(quantity) || quantity < 1) return { id: "order-quantity", error: "製作數量必須是大於 0 的整數。" };
+    if (leatherFoilConflict(draft.values, leatherValue)) return { id: "order-leather", error: `皮革 ${leatherCode(leatherValue)} 只能傳統燙金，請改選皮紋系列，或把燙金改成傳統燙金。` };
     if (filesRequired && !files.length) return { id: "order-files", error: "一般影印請上傳要影印的檔案。" };
     for (const id of ["customerType", "contactName", "phone", "email"]) if (!draft.contact[id]?.trim()) return { id: `contact-${id}`, error: `請填寫「${contactLabels[id]}」。` };
     if (!validatePhone(draft.contact.phone)) return { id: "contact-phone", error: "請輸入有效的聯絡電話。" };
@@ -169,7 +180,7 @@ export function OrderRequestForm() {
       const specifications = Object.fromEntries(Object.entries(draft.values).filter(([key, value]) => value && !["quantity", "wantedDate", "notes"].includes(key)));
       const response = await callPublicFunction<{ referenceNo: string; emailSent: boolean; estimate: { status: string; total: number | null }; paymentToken: string | null }>("submit-manual-inquiry", {
         idempotencyKey: draft.idempotencyKey, productSlug: draft.productSlug, quantity,
-        specifications: { ...specifications, ...(draft.samples.coverSample ? { coverSampleChoice: draft.samples.coverSample } : {}) },
+        specifications: { ...specifications, ...(leatherValue ? { coverSampleChoice: leatherValue } : {}) },
         customerType: draft.contact.customerType, contactName: draft.contact.contactName, phone: draft.contact.phone, email: draft.contact.email,
         organization: draft.contact.organization, lineId: draft.contact.line, preferredContact: "Email",
         shippingId: draft.contact.shippingId, shippingDistrict: draft.contact.district, deliveryAddress: draft.contact.address,
@@ -209,10 +220,16 @@ export function OrderRequestForm() {
         <div className="order-heading"><p>STEP 02 ／ SPECIFICATION</p><h2>{product.title}製作規格</h2><span>{product.description.replace("【暫存內容】", "")}</span></div>
         <ModeSwitch onChange={(mode) => setValue("mode", mode)} values={draft.values} />
         <div className="form-sheet"><div className="quote-field-grid">
-          <SpecFields idPrefix="order" marks={marks} onChange={setValue} slug={product.slug} values={draft.values} />
-          {shownCommonFields.map((field) => <CommonInput field={field} idPrefix="order" key={field.id} mark={marks[field.id]} onChange={(value) => setValue(field.id, field.id === "quantity" ? value.replace(/[^\d]/g, "") : value)} value={draft.values[field.id] ?? ""} />)}
-          {!filesRequired && <div className={`sample-picker${leatherNeeded ? " field-attention" : ""}`}><strong>皮面／膠皮樣品{leatherNeeded && <span className="field-mark field-mark-attention">請選擇</span>}</strong><span>{draft.samples.coverSample || "尚未選擇"}</span><Link className="button button-secondary" href={`/services/samples?select=cover&return=/order?product=${product.slug}`} onClick={() => writeDraft(draft)}>看樣品冊</Link></div>}
-          <div className={`quote-field quote-field-wide file-picker file-reminder${filesPulse === "on" ? " is-pulsing" : ""}`} onAnimationEnd={() => setFilesPulse("off")} ref={filePickerRef}>
+          <SpecFields disabledOptions={disabledOptions} idPrefix="order" marks={marks} onChange={setValue} slug={product.slug} values={draft.values} />
+          {shownCommonFields.map((field) => {
+            const input = (label?: string) => <CommonInput field={label ? { ...field, label } : field} idPrefix="order" key={field.id} mark={marks[field.id]} onChange={(value) => setValue(field.id, field.id === "quantity" ? value.replace(/[^\d]/g, "") : value)} value={draft.values[field.id] ?? ""} />;
+            if (field.id !== "coverColor" || !leatherPicker) return input();
+            return <Fragment key={field.id}>
+              <LeatherSelect attention={leatherNeeded} digitalOnly={wantsDigitalFoil(draft.values)} id="order-leather" onChange={chooseLeather} onOpenSamples={() => writeDraft(draft)} picker={leatherPicker} samplesHref={`/services/samples?select=cover&return=/order?product=${product.slug}`} value={leatherValue} />
+              {coverColorAsText && input("封面材質說明")}
+            </Fragment>;
+          })}
+          <div className={`quote-field quote-field-wide file-picker file-reminder${files.length ? "" : " is-empty"}${filesPulse === "on" ? " is-pulsing" : ""}`} onAnimationEnd={() => setFilesPulse("off")} ref={filePickerRef}>
             {filesRequired ? <>
               <label htmlFor="order-files"><span aria-hidden="true" className="file-reminder-icon">📎</span>上傳要影印的檔案<span className="quote-required">必填</span></label>
               <p className="file-reminder-lead">一般影印需要先上傳檔案，系統才能送出訂單。</p>

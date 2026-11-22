@@ -13,18 +13,25 @@ const markClass = (mark?: FieldMark) => mark && mark !== "carried" ? ` field-${m
 const money = (value: number) => `NT$${value.toLocaleString("zh-TW")}`;
 
 /** 選項 4 個以下用按鈕一鍵選擇，較多時才用下拉選單，減少點擊。 */
-function PricingInput({ field, value, onChange, idPrefix, mark }: { field: PricingField; value: string; onChange: (value: string) => void; idPrefix: string; mark?: FieldMark }) {
+/** 停用的選項（例如所選皮革不能數位燙金）與原因。 */
+export type DisabledOptions = Partial<Record<string, { options: readonly string[]; reason: string }>>;
+
+function PricingInput({ field, value, onChange, idPrefix, mark, disabled }: { field: PricingField; value: string; onChange: (value: string) => void; idPrefix: string; mark?: FieldMark; disabled?: { options: readonly string[]; reason: string } }) {
   const id = `${idPrefix}-${field.id}`;
+  const off = (option: string) => Boolean(disabled?.options.includes(option));
+  const reason = disabled && <p className="field-disabled-reason">{disabled.reason}</p>;
   if (field.kind === "number") {
     return <div className={`quote-field${markClass(mark)}`}><label htmlFor={id}>{field.label}<span className="quote-required">必填</span><Mark mark={mark} /></label>{field.help && <p>{field.help}</p>}
       <div className="spec-number"><input id={id} inputMode="numeric" max={field.max} min={field.min} onChange={(event) => onChange(event.target.value.replace(/[^\d]/g, ""))} placeholder={field.placeholder} type="text" value={value} /><span>{field.unit}</span></div></div>;
   }
   if (field.options.length <= 4) {
     return <fieldset className={`quote-field quote-field-wide${markClass(mark)}`}><legend>{field.label}<span className="quote-required">必填</span><Mark mark={mark} /></legend>{field.help && <p>{field.help}</p>}
-      <div className="quote-choice-row">{field.options.map((option) => <label className="quote-choice" key={option}><input checked={value === option} name={id} onChange={() => onChange(option)} type="radio" /><span>{option}</span></label>)}</div></fieldset>;
+      {reason}
+      <div className="quote-choice-row">{field.options.map((option) => <label className={`quote-choice${off(option) ? " is-disabled" : ""}`} key={option}><input checked={value === option} disabled={off(option)} name={id} onChange={() => onChange(option)} type="radio" /><span>{option}</span></label>)}</div></fieldset>;
   }
   return <div className={`quote-field${markClass(mark)}`}><label htmlFor={id}>{field.label}<span className="quote-required">必填</span><Mark mark={mark} /></label>{field.help && <p>{field.help}</p>}
-    <select id={id} onChange={(event) => onChange(event.target.value)} value={value}><option value="">請選擇</option>{field.options.map((option) => <option key={option}>{option}</option>)}</select></div>;
+    {reason}
+    <select id={id} onChange={(event) => onChange(event.target.value)} value={value}><option value="">請選擇</option>{field.options.map((option) => <option disabled={off(option)} key={option} value={option}>{off(option) ? `${option}（不可選）` : option}</option>)}</select></div>;
 }
 
 function OrderInput({ field, value, onChange, idPrefix, mark }: { field: OrderField; value: string; onChange: (value: string) => void; idPrefix: string; mark?: FieldMark }) {
@@ -47,9 +54,9 @@ export function visibleManualFields(slug: string, values: Values) {
 }
 
 /** 產品規格欄位：自動計價產品用計價引擎的欄位，其餘用人工報價欄位。 */
-export function SpecFields({ slug, values, onChange, idPrefix, marks = {} }: { slug: string; values: Values; onChange: (id: string, value: string) => void; idPrefix: string; marks?: FieldMarks }) {
+export function SpecFields({ slug, values, onChange, idPrefix, marks = {}, disabledOptions = {} }: { slug: string; values: Values; onChange: (id: string, value: string) => void; idPrefix: string; marks?: FieldMarks; disabledOptions?: DisabledOptions }) {
   if (isAutoPriced(slug)) {
-    return <>{visiblePricingFields(slug, values).map((field) => <PricingInput field={field} idPrefix={idPrefix} key={field.id} mark={marks[field.id]} onChange={(value) => onChange(field.id, value)} value={values[field.id] ?? ""} />)}</>;
+    return <>{visiblePricingFields(slug, values).map((field) => <PricingInput disabled={disabledOptions[field.id]} field={field} idPrefix={idPrefix} key={field.id} mark={marks[field.id]} onChange={(value) => onChange(field.id, value)} value={values[field.id] ?? ""} />)}</>;
   }
   return <>{visibleManualFields(slug, values).map((field) => <OrderInput field={field} idPrefix={idPrefix} key={field.id} mark={marks[field.id]} onChange={(value) => onChange(field.id, value)} value={values[field.id] ?? ""} />)}</>;
 }

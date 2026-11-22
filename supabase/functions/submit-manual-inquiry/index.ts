@@ -4,6 +4,7 @@ import { adminClient, allowSubmission, publicNumber } from "../_shared/database.
 import { allowedOrigin, corsHeaders, response } from "../_shared/http.ts";
 import { calculateEstimate, isAutoPriced, shippingChoices, visiblePricingFields } from "../_shared/pricing.ts";
 import { allowedManualSpecKeys } from "../_shared/spec-labels.ts";
+import { leatherFoilConflict } from "../_shared/leather-rules.ts";
 import { email, isoDate, phone, positiveInteger, submissionFingerprints, text, uuid, type JsonObject } from "../_shared/validation.ts";
 
 const products = {
@@ -139,6 +140,8 @@ Deno.serve(async (request) => {
 
     const idempotencyKey = uuid(body, "idempotencyKey");
     const specs = specifications(body, productSlug);
+    // 數位燙金只能用皮紋系列皮革（與下單頁同一條規則）。
+    if (leatherFoilConflict(specs, specs.coverSampleChoice)) throw new Error("invalid:coverSampleChoice");
     const attachments = attachmentList(body, idempotencyKey);
     // 一般影印一定要有要印的檔案。
     if (productSlug === "photocopy" && !attachments.length) throw new Error("invalid:attachments");
