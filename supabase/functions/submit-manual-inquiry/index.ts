@@ -7,6 +7,7 @@ import { allowedManualSpecKeys } from "../_shared/spec-labels.ts";
 import { email, isoDate, phone, positiveInteger, submissionFingerprints, text, uuid, type JsonObject } from "../_shared/validation.ts";
 
 const products = {
+  "photocopy": ["prd-photocopy", "一般影印", "photocopy"],
   "thesis-binding": ["prd-thesis-binding", "論文", "book-binding"],
   "certificate-folder": ["prd-certificate-folder", "證書夾", "certificate-folder"],
   "construction-book": ["prd-construction-book", "工程施工本", "construction-book"],
@@ -139,6 +140,8 @@ Deno.serve(async (request) => {
     const idempotencyKey = uuid(body, "idempotencyKey");
     const specs = specifications(body, productSlug);
     const attachments = attachmentList(body, idempotencyKey);
+    // 一般影印一定要有要印的檔案。
+    if (productSlug === "photocopy" && !attachments.length) throw new Error("invalid:attachments");
 
     // 後端重新計價：不採用瀏覽器傳來的任何金額。
     const estimate = calculateEstimate({ productSlug, quantity, values: specs, shippingId: shippingChoice.id, district });

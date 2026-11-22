@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import { activeCategories, orderableProducts } from "@/data/catalog";
-import { calculateEstimate } from "@/lib/pricing";
+import { PHOTOCOPY_SLUG, calculateEstimate } from "@/lib/pricing";
 import { handOffQuote } from "@/lib/order-draft";
 import { ProductPicker } from "@/components/product-picker";
 import { ModeSwitch, PriceBreakdown, ShippingPicker, SpecFields, specSummary } from "@/components/spec-fields";
@@ -62,7 +62,7 @@ export function QuoteCatalog() {
           <div className="quote-binding-tab"><strong>{product.title}</strong><span>規格</span></div>
           <div className="quote-field-grid">
             <SpecFields idPrefix="quote" onChange={(id, value) => setValues((current) => ({ ...current, [id]: value }))} slug={product.slug} values={values} />
-            <div className="quote-field"><label htmlFor="quote-quantity">製作數量<span className="quote-required">必填</span></label>
+            <div className="quote-field"><label htmlFor="quote-quantity">{product.slug === PHOTOCOPY_SLUG ? "影印份數" : "製作數量"}<span className="quote-required">必填</span></label>
               <div className="spec-number"><input id="quote-quantity" inputMode="numeric" onChange={(event) => setQuantity(event.target.value.replace(/[^\d]/g, ""))} type="text" value={quantity} /><span>本</span></div></div>
           </div>
           <ShippingPicker district={district} idPrefix="quote" onChange={(next) => { if (next.shippingId !== undefined) setShippingId(next.shippingId); if (next.district !== undefined) setDistrict(next.district); }} shippingId={shippingId} />
@@ -71,7 +71,7 @@ export function QuoteCatalog() {
         <aside className={`quote-summary ${estimate?.status === "manual" ? "is-manual" : ""}`} aria-live="polite">
           <div className="quote-summary-tab">試算結果</div>
           <p className="quote-summary-product"><span>產品</span><strong>{product.title}</strong></p>
-          {summary.length > 0 && <dl>{summary.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}<div><dt>數量</dt><dd>{quantity || "—"} 本</dd></div></dl>}
+          {summary.length > 0 && <dl>{summary.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}<div><dt>數量</dt><dd>{quantity || "—"} {product.slug === PHOTOCOPY_SLUG ? "份" : "本"}</dd></div></dl>}
           <PriceBreakdown compact estimate={estimate} />
           <button className="button button-primary quote-order-link" disabled={!numericQuantity} onClick={order} type="button">用這個規格下單</button>
         </aside>

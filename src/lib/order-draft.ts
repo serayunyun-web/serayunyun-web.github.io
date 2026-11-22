@@ -7,6 +7,10 @@ export type Draft = {
   samples: Record<string, string>;
   privacyConsent: boolean;
   idempotencyKey: string;
+  /** 從查價頁帶入的欄位 id，下單頁標示「已帶入」；換產品時清空。 */
+  quoteKeys?: string[];
+  /** 剛從查價頁帶入、提示視窗還沒關掉。 */
+  quoteNotice?: boolean;
 };
 
 export const blankDraft = (): Draft => ({ productSlug: "", values: { quantity: "1" }, contact: {}, samples: {}, privacyConsent: false, idempotencyKey: "" });
@@ -32,6 +36,8 @@ export function handOffQuote(input: { productSlug: string; values: Record<string
     ...current,
     productSlug: input.productSlug,
     values: { ...input.values, quantity: input.quantity },
+    quoteKeys: [...Object.keys(input.values).filter((key) => input.values[key]), "quantity"],
+    quoteNotice: true,
     contact: { ...current.contact, shippingId: input.shippingId, district: input.district },
     samples: current.productSlug === input.productSlug ? current.samples : {},
     idempotencyKey: crypto.randomUUID(),

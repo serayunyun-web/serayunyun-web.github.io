@@ -65,7 +65,7 @@ export const productCategories: readonly ProductCategory[] = [
   { id: "cat-books", slug: "books", name: "論文／書冊", description: "論文、作品集與各式書冊製作", icon: "冊", image: null, displayOrder: 10, isActive: true, isPlaceholder: false },
   { id: "cat-business", slug: "business", name: "工程／企業", description: "工程文件、企業文宣與商務製作", icon: "企", image: null, displayOrder: 20, isActive: true, isPlaceholder: false },
   { id: "cat-creative", slug: "creative", name: "創作／生活", description: "個人創作、展示與生活應用", icon: "創", image: null, displayOrder: 30, isActive: true, isPlaceholder: false },
-  { id: "cat-finishing", slug: "finishing", name: "加工服務", description: "裝訂、打孔與文件加工服務", icon: "製", image: null, displayOrder: 40, isActive: true, isPlaceholder: false },
+  { id: "cat-finishing", slug: "finishing", name: "加工服務", description: "影印、裝訂、打孔與文件加工服務", icon: "製", image: null, displayOrder: 40, isActive: true, isPlaceholder: false },
 ] as const;
 
 const productNotes = ["本頁不顯示未確認價格，也不構成正式報價或訂單。", "正式價格、規格與交期須經鴻萊人工審核，並由客戶確認後才安排製作。"] as const;
@@ -125,6 +125,23 @@ const gallery = (slug: string, title: string, tone: CatalogTone): readonly Produ
 };
 
 export const products: readonly Product[] = [
+  {
+    // 排在所有產品最前面（displayOrder 5）。尚無正式照片，先用佔位圖。
+    id: "prd-photocopy", slug: "photocopy", title: "一般影印",
+    description: "黑白、彩色影印，A4、A3 單雙面都能印，上傳檔案就能線上試算下單。",
+    categoryIds: ["cat-finishing"], cardImage: cardImageFor("photocopy"), gallery: gallery("photocopy", "一般影印", "brown"),
+    basicInfo: [{ label: "估價方式", value: "線上即時試算" }, { label: "交期", value: "下單後由專人確認" }],
+    details: bindingDetails(
+      ["色彩｜黑白、彩色", "尺寸｜A4、A3（B5、A5 照 A4，B4 照 A3）", "印刷｜單面、雙面"],
+      ["講義、報告、資料、表單、作業"],
+      ["需上傳要影印的檔案", "只提供影印，需要裝訂請選裝訂產品"],
+      [
+        "講義、報告、資料\n黑白、彩色都能印\n一份也接",
+        "上傳檔案、選好尺寸和單雙面\n價格馬上算出來\n不用再來回詢價",
+      ],
+    ),
+    tone: "brown", displayOrder: 5, isActive: true, isPlaceholder: false,
+  },
   {
     id: "prd-thesis-binding", slug: "thesis-binding", title: "論文",
     description: "依學校規範製作平裝或精裝論文，可燙印校名、題目與姓名。",

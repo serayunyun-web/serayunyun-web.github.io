@@ -10,6 +10,7 @@ const inner = (pages: string, extra: Record<string, string> = {}) => ({ pages, p
 const designer = (extra: Record<string, string>) => ({ mode: MODE_DESIGNER, paper: "80g 道林紙", countUnit: "張數", printSides: "雙面印刷", coverPaper: "不指定", ...extra });
 
 const baseValues: Record<string, Record<string, string>> = {
+  photocopy: { copySize: "A4", pages: "20", printSides: "雙面印刷", printColor: "黑白" },
   "thesis-binding": { thesisInner: "內頁尚未膠裝", thesisFoil: "不需要燙金", schoolLogo: "不需要", ...inner("100") },
   "certificate-folder": { certStyle: "普通兩片式", certLining: "不需要", certCorner: "不需要", certFoil: "不需要", certLiningCount: "1" },
   "perfect-binding": { bookSize: "A4/B5", staple: "不需要", foldFlap: "不需要", ...inner("100") },
@@ -45,6 +46,38 @@ test("所有可下單產品都能自動計價，每個選項（兩種模式）�
       }
     }
   }
+});
+
+test("一般影印：黑白 A4 雙面 20 頁＝10 張，每張 1 元；1 份不加打樣費", () => {
+  assert.equal(total("photocopy", 5, baseValues.photocopy).subtotal, 50);
+  const one = total("photocopy", 1, baseValues.photocopy);
+  assert.equal(one.subtotal, 10);
+  assert.equal(one.lines.length, 1);
+  assert.match(one.lines[0].label, /黑白印刷（A4 雙面，10 張／份）/);
+});
+
+test("一般影印：彩色 A3 單面、B4 照 A3、B5／A5 照 A4", () => {
+  const color = (copySize: string) => total("photocopy", 2, { copySize, pages: "3", printSides: "單面印刷", printColor: "彩色" }).subtotal;
+  assert.equal(color("A3"), 30); // 5 × 3 張 × 2 份
+  assert.equal(color("B4"), 30);
+  assert.equal(color("B5"), 18); // 3 × 3 張 × 2 份
+  assert.equal(color("A5"), 18);
+});
+
+test("一般影印：每行小計四捨五入、不打數量折扣", () => {
+  assert.equal(total("photocopy", 1, { copySize: "A4", pages: "7", printSides: "單面印刷", printColor: "黑白" }).subtotal, 4); // 0.6 × 7 = 4.2
+  assert.equal(total("photocopy", 1, { copySize: "A4", pages: "15", printSides: "單面印刷", printColor: "黑白" }).subtotal, 9);
+  const bulk = total("photocopy", 150, baseValues.photocopy);
+  assert.equal(bulk.subtotal, 1500);
+  assert.equal(bulk.lines.length, 1);
+});
+
+test("一般影印：設計師混合印刷；沒有「不需要印刷」與封面紙張", () => {
+  const mixed = total("photocopy", 10, { ...designer({ innerSheetCount: "100" }), copySize: "A4", printColor: "黑白彩色混合", colorSheets: "20" });
+  assert.equal(mixed.subtotal, 20 * 6 * 10 + 80 * 1 * 10);
+  const fields = pricingFields("photocopy");
+  assert.ok(!fields.some((field) => field.id === "coverPaper"));
+  assert.ok(fields.filter((field) => field.id === "printColor").every((field) => field.kind === "select" && !field.options.includes(NO_PRINT)));
 });
 
 test("膠裝：A4、80g 雙面 300 頁＝150 張 1.5 公分，10 本", () => {

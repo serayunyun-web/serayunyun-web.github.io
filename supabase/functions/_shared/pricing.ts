@@ -154,7 +154,7 @@ export function printSizeOf(size: string): PrintSize {
   return /A3|B4|25x25|30x30/.test(size) ? "A3" : "A4";
 }
 
-function printLines(values: Values, quantity: number, size: PrintSize): Calc {
+function printLines(values: Values, quantity: number, size: PrintSize, per = "本"): Calc {
   const color = values.printColor;
   const sheets = innerSheets(values);
   if (!sheets || !color || color === NO_PRINT) return { lines: [] };
@@ -162,7 +162,7 @@ function printLines(values: Values, quantity: number, size: PrintSize): Calc {
   const sideLabel = sides === "single" ? "單面" : "雙面";
   const entry = (tone: "黑白" | "彩色", count: number) => {
     const rate = printRates[tone][size][sides];
-    return line(`內頁${tone}印刷（${size} ${sideLabel}，${count} 張／本）`, { amount: rate, source: "內頁印刷價目（2026-11-16 確認，含紙張）" }, count * quantity, "張");
+    return line(`${per === "本" ? "內頁" : ""}${tone}印刷（${size} ${sideLabel}，${count} 張／${per}）`, { amount: rate, source: "內頁印刷價目（2026-11-16 確認，含紙張）" }, count * quantity, "張");
   };
   if (color !== MIXED) return { lines: [entry(color as "黑白" | "彩色", sheets)] };
   const colorSheets = Number(values.colorSheets);
@@ -179,6 +179,24 @@ function withPrint(binding: Calc, values: Values, quantity: number, size: PrintS
   if ("invalid" in print) return print;
   return { lines: [...binding.lines, ...print.lines], notes: [...(binding.notes ?? []), ...thicknessNote(values)] };
 }
+
+/* ---------- 一般影印 ---------- */
+
+export const PHOTOCOPY_SLUG = "photocopy";
+
+/** 一般影印沿用內頁印刷欄位與價目：拿掉「不需要印刷」與封面紙張，欄位名稱改成影印用語。 */
+const photocopyFields: readonly PricingField[] = [
+  { id: "copySize", label: "紙張尺寸", kind: "select", options: ["A4", "A3", "B5", "B4", "A5"], help: "B5、A5 照 A4 價；B4 照 A3 價。" },
+  ...innerFields.filter((field) => field.id !== "coverPaper").map((field): PricingField => {
+    if (field.id === "printColor" && field.kind === "select") return { ...field, label: "印刷色彩", options: field.options.filter((option) => option !== NO_PRINT) };
+    if (field.id === "paper") return { ...field, label: "紙張", help: "所有紙種同價。" };
+    if (field.id === "pages" && field.kind === "number") return { ...field, label: "每份頁數", placeholder: "例如 20" };
+    if (field.id === "innerSheetCount" && field.kind === "number") return { ...field, label: "每份張數", placeholder: "例如 10" };
+    if (field.id === "countUnit") return { ...field, label: "數量算法" };
+    if (field.id === "colorSheets") return { ...field, help: "每份其中幾張彩色，其餘以黑白計價。" };
+    return field;
+  }),
+];
 
 /* ---------- 共用加價 ---------- */
 
@@ -228,6 +246,14 @@ export function pickRing(kind: "環裝代工" | "雙線圈代工", mm: number) {
 /* ---------- 產品計價設定 ---------- */
 
 const products: readonly PricingProduct[] = [
+  {
+    // 純影印：只收印刷費（已含紙張），不加打樣費、不打數量折扣（2026-11-23 確認只做純影印）。
+    slug: PHOTOCOPY_SLUG, title: "一般影印", smallQuantity: "included", bulk: "own",
+    fields: photocopyFields,
+    calc(values, quantity) {
+      return printLines(values, quantity, printSizeOf(values.copySize ?? ""), "份");
+    },
+  },
   {
     slug: "thesis-binding", title: "論文", smallQuantity: "sample50", bulk: "standard",
     fields: [
