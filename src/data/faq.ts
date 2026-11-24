@@ -11,10 +11,16 @@ export type FaqCategory = {
   faqVisible: boolean;
 };
 
+export type FaqImage = {
+  src: string;
+  alt: string;
+};
+
 export type FaqEntry = {
   id: string;
   question: string;
   answer: string;
+  images?: FaqImage[];
   sourceCategory: string;
   category: string;
   categorySlug: string;

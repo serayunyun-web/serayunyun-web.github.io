@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { HomeHero3D } from "@/components/home-hero-3d";
 import { HomeHeroCarousel } from "@/components/home-hero-carousel";
+import { HomeIntro } from "@/components/home-intro";
 import { FoilTestVideo } from "@/components/foil-test-video";
 import { HandDrawnTitle } from "@/components/hand-drawn-title";
 import { ProductCard } from "@/components/product-card";
@@ -22,11 +23,30 @@ const processSteps = [
 export default function Home() {
   return (
     <main>
+      <HomeIntro />
       <HomeHero3D />
 
       <section className="home-section banner-feature-section" aria-label="鴻萊精選服務">
         <div className="page-container">
           <HomeHeroCarousel className="banner-feature" headingLevel="h2" />
+        </div>
+      </section>
+
+      <section className="home-section foil-feature-section" aria-labelledby="foil-feature-title">
+        <div className="page-container foil-feature">
+          <FoilTestVideo />
+          <div className="foil-feature-copy">
+            <p className="eyebrow">Digital Foil Stamping｜數位燙金</p>
+            <h2 id="foil-feature-title"><HandDrawnTitle circle="不必開版" title={"不必開版，\n也能燙出精緻細節。"} underline="精緻細節" /></h2>
+            <p className="foil-feature-lead">告別傳統燙金的開版限制，少量製作也能展現細緻光澤，讓客製封面更加靈活。</p>
+            <ul className="foil-feature-points">
+              {digitalFoil.featurePoints.map(({ title, description }) => <li key={title}><strong>{title}</strong><span>{description}</span></li>)}
+            </ul>
+            <div className="foil-feature-actions">
+              <Link className="button foil-feature-primary" href="/news/digital-foil">看完整介紹 <span aria-hidden="true">→</span></Link>
+              <Link className="button foil-feature-secondary" href="/services/samples?foil=digital">看可燙皮革</Link>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -55,24 +75,6 @@ export default function Home() {
               <span className="audience-symbol" aria-hidden="true"><Image alt="" height={560} src={withBase("/images/home/audience-b2c.png")} width={560} /></span>
               <div><p>一般消費者、個人作品、少量客製與裝訂需求</p><h3>我是個人／創作者</h3><span className="audience-action">瀏覽服務與產品 →</span></div>
             </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="home-section foil-feature-section" aria-labelledby="foil-feature-title">
-        <div className="page-container foil-feature">
-          <FoilTestVideo />
-          <div className="foil-feature-copy">
-            <p className="eyebrow">Digital Foil Stamping｜數位燙金</p>
-            <h2 id="foil-feature-title"><HandDrawnTitle circle="不必開版" title={"不必開版，\n也能燙出精緻細節。"} underline="精緻細節" /></h2>
-            <p className="foil-feature-lead">告別傳統燙金的開版限制，少量製作也能展現細緻光澤，讓客製封面更加靈活。</p>
-            <ul className="foil-feature-points">
-              {digitalFoil.featurePoints.map(({ title, description }) => <li key={title}><strong>{title}</strong><span>{description}</span></li>)}
-            </ul>
-            <div className="foil-feature-actions">
-              <Link className="button foil-feature-primary" href="/news/digital-foil">看完整介紹 <span aria-hidden="true">→</span></Link>
-              <Link className="button foil-feature-secondary" href="/services/samples?foil=digital">看可燙皮革</Link>
-            </div>
           </div>
         </div>
       </section>

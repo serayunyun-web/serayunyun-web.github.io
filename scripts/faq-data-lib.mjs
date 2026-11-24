@@ -36,6 +36,7 @@ const knownMetadataLabels = new Set([
   "回答類型",
   "是否需人工",
   "價格相關",
+  "圖片",
 ]);
 
 function normalizeQuestion(question) {
@@ -115,6 +116,7 @@ export function buildFaqPayload(markdown, options = {}) {
       id,
       question,
       answer,
+      ...(current.images.length ? { images: current.images } : {}),
       sourceCategory: current.category,
       category: displayCategory.name,
       categorySlug: displayCategory.slug,
@@ -161,6 +163,7 @@ export function buildFaqPayload(markdown, options = {}) {
         requiresHuman: "",
         priceRelated: "",
         answerLines: [],
+        images: [],
         aiNotes: [],
         readingAiNotes: false,
       };
@@ -210,6 +213,17 @@ export function buildFaqPayload(markdown, options = {}) {
     const priceValue = parseValue(line, "價格相關");
     if (priceValue !== null) {
       current.priceRelated = priceValue;
+      continue;
+    }
+
+    // 一題可有多張圖，每張一行：**圖片：** /images/faq/檔名.svg｜圖片說明
+    const imageValue = parseValue(line, "圖片");
+    if (imageValue !== null) {
+      const [src, alt, ...extra] = imageValue.split("｜").map((part) => part.trim());
+      if (!src?.startsWith("/images/") || !alt || extra.length) {
+        throw new Error(`FAQ「${current.question}」的圖片格式不正確：${imageValue}`);
+      }
+      current.images.push({ src, alt });
       continue;
     }
 

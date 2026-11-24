@@ -398,9 +398,10 @@ html.paw-cursor-active:has(dialog[open]) body * {
 }
 html.paw-cursor-active:has(dialog[open]) body dialog :is(button, a, label) { cursor: pointer !important; }
 html:has(dialog[open]) .paw-cursor-canvas { display: none; }
+/* 游標要在所有頁面元素之上（含自己的開關按鈕、開場動畫）；畫布不接收點擊，不會擋住操作。 */
 .paw-cursor-canvas {
   position: fixed;
-  z-index: 60;
+  z-index: 1000;
   inset: 0;
   width: 100vw;
   height: 100vh;
@@ -1022,6 +1023,11 @@ html:has(dialog[open]) .paw-cursor-canvas { display: none; }
 .faq-answer h4:first-child { margin-top: 0; }
 .faq-answer ul,
 .faq-answer ol { display: grid; gap: .35rem; margin-block: .7rem; padding-left: 1.35rem; }
+.faq-figure { margin: 1.25rem 0 0; }
+.faq-figure a { display: block; overflow: hidden; border: 1px solid var(--line); border-radius: 12px 4px; background: var(--paper); cursor: zoom-in; }
+.faq-figure img { display: block; width: 100%; height: auto; }
+.faq-figure figcaption { margin-top: .5rem; color: var(--muted); font-size: .82rem; line-height: 1.6; }
+.faq-figure figcaption span { margin-left: .6rem; color: var(--brown-text); font-weight: 700; white-space: nowrap; }
 .faq-price-guidance {
   margin-top: 1rem !important;
   border-top: 1px dashed #b6ccc5;
@@ -1223,7 +1229,7 @@ html:has(dialog[open]) .paw-cursor-canvas { display: none; }
 }
 
 /* Original homepage banner carousel, shown as a contained block lower on the homepage */
-.banner-feature-section { background: var(--white); padding-bottom: 0; }
+.banner-feature-section { background: var(--white); }
 .banner-feature { border-bottom: 0; border-radius: 34px 12px; box-shadow: var(--shadow-soft); }
 .banner-feature .home-hero-content { width: 100%; }
 @media (min-width: 701px) {
@@ -1859,3 +1865,39 @@ h3 { font-weight: 800; }
   .foil-feature-actions .button { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .foil-feature-copy .hand-mark-underline { text-decoration-color: #d4af37; } }
+
+/* 首頁開場：燙金描繪商標（總長 2.1s，見 home-intro.tsx） */
+.home-intro { --intro-in-out: cubic-bezier(.65, 0, .35, 1); --intro-out: cubic-bezier(.33, 1, .68, 1); position: fixed; inset: 0; z-index: 90; overflow: hidden; }
+.home-intro[hidden] { display: none; }
+.home-intro-paper { position: absolute; inset: 0; background: var(--paper); }
+.home-intro-stage { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(6px, 1.4vw, 16px); }
+.home-intro-mark { position: relative; width: min(640px, 86vw); aspect-ratio: 952 / 262; transform-origin: 0 0; }
+.home-intro-mark > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+.home-intro-foil { opacity: 0; }
+.home-intro-color { clip-path: inset(0 100% 0 0); }
+.home-intro-lines { fill: none; stroke: #cfa42e; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.home-intro-lines > * { stroke-dasharray: 1 2; stroke-dashoffset: 1; opacity: 0; }
+.home-intro-shine rect { transform: translateX(-160px) skewX(-12deg); }
+.home-intro-name { max-width: none; clip-path: inset(0 100% 0 41.6%); }
+.home-intro-tagline { margin: 0; color: var(--brown-text); font-size: clamp(.95rem, 2.2vw, 1.25rem); font-weight: 600; letter-spacing: .14em; opacity: 0; }
+.home-intro[data-play] .home-intro-lines > * { animation: intro-line var(--line-length) var(--intro-in-out) var(--line-start) both; }
+.home-intro[data-play] .home-intro-foil { animation: intro-show .25s var(--intro-out) .55s both, intro-hide .01s linear 1.28s forwards; }
+.home-intro[data-play] .home-intro-color { animation: intro-color .4s var(--intro-in-out) .88s both; }
+.home-intro[data-play] .home-intro-shine rect { animation: intro-shine .4s var(--intro-in-out) .88s both; }
+.home-intro[data-play] .home-intro-lines { animation: intro-hide .25s linear 1.05s both; }
+.home-intro[data-play] .home-intro-name { animation: intro-name .4s var(--intro-out) .8s both; }
+.home-intro[data-play] .home-intro-tagline { animation: intro-tagline .3s var(--intro-out) 1.05s backwards, intro-hide .18s linear 1.5s forwards; opacity: 1; }
+.home-intro[data-play] .home-intro-mark { animation: intro-fly .55s var(--intro-in-out) 1.55s both; }
+.home-intro[data-play] .home-intro-paper { animation: intro-hide .4s linear 1.62s both; }
+@keyframes intro-line { from { stroke-dashoffset: 1; opacity: 0; } 4% { opacity: 1; } to { stroke-dashoffset: 0; opacity: 1; } }
+@keyframes intro-show { from { opacity: 0; } to { opacity: 1; } }
+@keyframes intro-hide { from { opacity: 1; } to { opacity: 0; } }
+@keyframes intro-color { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 58% 0 0); } }
+@keyframes intro-shine { from { transform: translateX(-160px) skewX(-12deg); } to { transform: translateX(480px) skewX(-12deg); } }
+@keyframes intro-name { from { clip-path: inset(0 58.4% 0 41.6%); } to { clip-path: inset(0 0 0 41.6%); } }
+@keyframes intro-tagline { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes intro-fly { from { transform: none; } to { transform: translate(var(--fly-x, 0), var(--fly-y, 0)) scale(var(--fly-s, 1)); } }
+/* 開場時先藏導覽列商標，等飛到定位再換回；首頁標題等底紙淡開才上浮 */
+:root:has(#home-intro[data-play]:not([hidden])) .site-header .brand-logo { visibility: hidden; }
+:root:has(#home-intro[data-play]) .home-hero-3d .home-hero-copy > * { animation-delay: calc(1.7s + var(--fade-i, 0) * .14s); }
+@media print { .home-intro { display: none; } }

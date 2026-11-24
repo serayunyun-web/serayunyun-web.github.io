@@ -1,7 +1,7 @@
 {
   "source": "鴻萊_FAQ_KNOWLEDGE_BASE_第二版.md",
-  "sourceSha256": "fc6b16ad24f2c6ce9ae7a695d0eed67f1dd2634cf199fb065add2b6fa46e2758",
-  "generatedAt": "2026-11-05",
+  "sourceSha256": "8f63c76801d68a5ae13025533568cc7604ec7bd76b1c4b7228619df845648ec0",
+  "generatedAt": "2026-11-24",
   "categories": [
     {
       "id": "printing-estimates",
@@ -260,6 +260,90 @@
       "isActive": true
     },
     {
+      "id": "files-artwork-fb5b1845f2",
+      "question": "精裝彩色封面的尺寸要怎麼計算？",
+      "answer": "封面設計時，請以內頁修邊完成後的尺寸為主來計算：\n\n- W 書寬：內頁書寬 + 6 mm（正面、背面相同）。\n- L 書高：內頁書高 + 6 mm。\n- D 書背：內頁書背 + 6 mm。\n- B 出血：上下左右各加 15～20 mm。底圖至少需出血 10 mm，其餘用色塊填滿，因為成品的封面裡、封底裡及紙板厚度的地方，都可以看到部分出血範圍的底圖。\n- G 書溝：一般為 10～12 mm，請勿將重要的人像、文字置於書溝內。\n\n### 計算範例\n\n內頁裁切完成尺寸為高 294 mm × 寬 210 mm、內頁厚度 10 mm，封面設定如下：\n\n- 正面：高 300 mm × 寬 216 mm\n- 書背：16 mm\n- 背面：高 300 mm × 寬 216 mm\n- 四周各加 20 mm 出血後，檔案總尺寸為高 340 mm × 寬 488 mm\n\n若版面底圖需要滿版，請記得要作出血。",
+      "images": [
+        {
+          "src": "/images/faq/hardcover-cover-layout.svg",
+          "alt": "精裝彩色封面展開示意圖：W 書寬、L 書高、D 書背、G 書溝、B 出血"
+        }
+      ],
+      "sourceCategory": "稿件與檔案相關",
+      "category": "稿件與檔案",
+      "categorySlug": "files-artwork",
+      "subcategory": "封面製圖",
+      "faqVisible": true,
+      "aiUsable": true,
+      "answerType": null,
+      "requiresHuman": null,
+      "priceRelated": false,
+      "aiNotes": [],
+      "displayOrder": 12,
+      "isActive": true
+    },
+    {
+      "id": "files-artwork-2628cd4897",
+      "question": "精裝彩色封面建議使用什麼材質？",
+      "answer": "依印製方式與數量，建議使用：\n\n- 少量噴墨大圖：PVC 背膠 + 冷裱\n- 少量雷射輸出：120～150P 紙張 + 上膜\n- 大量平版印刷：150P 銅版紙 + 上膜",
+      "sourceCategory": "稿件與檔案相關",
+      "category": "稿件與檔案",
+      "categorySlug": "files-artwork",
+      "subcategory": "封面製圖",
+      "faqVisible": true,
+      "aiUsable": true,
+      "answerType": null,
+      "requiresHuman": null,
+      "priceRelated": false,
+      "aiNotes": [],
+      "displayOrder": 13,
+      "isActive": true
+    },
+    {
+      "id": "files-artwork-a027de55e0",
+      "question": "精裝彩色封面沒有依格式製作會怎麼樣？",
+      "answer": "建議先依照「精裝彩色封面的尺寸要怎麼計算？」的格式製作封面檔案。\n\n- 封面若無法依格式製作，封面四周會有一些圖案包到封面的背側。\n- 若內頁是依照封面設定的尺寸製作，內頁必須被裁成較小的尺寸。",
+      "sourceCategory": "稿件與檔案相關",
+      "category": "稿件與檔案",
+      "categorySlug": "files-artwork",
+      "subcategory": "封面製圖",
+      "faqVisible": true,
+      "aiUsable": true,
+      "answerType": null,
+      "requiresHuman": null,
+      "priceRelated": false,
+      "aiNotes": [],
+      "displayOrder": 14,
+      "isActive": true
+    },
+    {
+      "id": "files-artwork-ff50ccd61d",
+      "question": "A4 證書冊／證書夾的封面要怎麼製圖？",
+      "answer": "A4 證書冊／證書夾的封面尺寸，會依內容物是否護貝而不同：\n\n- 無護貝：單面寬 222 mm × 高 309 mm，書背 10 mm。加上四周出血後，檔案總尺寸為寬 494 mm × 高 349 mm。\n- 有護貝：單面寬 225 mm × 高 314 mm，書背 10 mm。加上四周出血後，檔案總尺寸為寬 500 mm × 高 354 mm。\n\n兩種尺寸的四周（上下左右）都需各加 20 mm 出血。",
+      "images": [
+        {
+          "src": "/images/faq/certificate-cover-unlaminated.svg",
+          "alt": "A4 無護貝：單面寬 222 mm、高 309 mm，書背 10 mm，四周出血 20 mm"
+        },
+        {
+          "src": "/images/faq/certificate-cover-laminated.svg",
+          "alt": "A4 有護貝：單面寬 225 mm、高 314 mm，書背 10 mm，四周出血 20 mm"
+        }
+      ],
+      "sourceCategory": "稿件與檔案相關",
+      "category": "稿件與檔案",
+      "categorySlug": "files-artwork",
+      "subcategory": "封面製圖",
+      "faqVisible": true,
+      "aiUsable": true,
+      "answerType": null,
+      "requiresHuman": null,
+      "priceRelated": false,
+      "aiNotes": [],
+      "displayOrder": 15,
+      "isActive": true
+    },
+    {
       "id": "files-artwork-06",
       "question": "印刷檔解析度需要多少？",
       "answer": "一般印刷檔建議至少 300dpi。\n\n若為遠距觀看的大型輸出，最低可使用 150dpi。\n\n低於需求解析度時，成品可能出現模糊情況。",
@@ -273,7 +357,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 12,
+      "displayOrder": 16,
       "isActive": true
     },
     {
@@ -290,7 +374,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 13,
+      "displayOrder": 17,
       "isActive": true
     },
     {
@@ -307,7 +391,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 14,
+      "displayOrder": 18,
       "isActive": true
     },
     {
@@ -324,7 +408,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 15,
+      "displayOrder": 19,
       "isActive": true
     },
     {
@@ -341,7 +425,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 16,
+      "displayOrder": 20,
       "isActive": true
     },
     {
@@ -358,7 +442,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 17,
+      "displayOrder": 21,
       "isActive": true
     },
     {
@@ -375,7 +459,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 18,
+      "displayOrder": 22,
       "isActive": true
     },
     {
@@ -392,7 +476,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 19,
+      "displayOrder": 23,
       "isActive": true
     },
     {
@@ -409,7 +493,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 20,
+      "displayOrder": 24,
       "isActive": true
     },
     {
@@ -426,7 +510,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 21,
+      "displayOrder": 25,
       "isActive": true
     },
     {
@@ -443,7 +527,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 22,
+      "displayOrder": 26,
       "isActive": true
     },
     {
@@ -460,7 +544,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 23,
+      "displayOrder": 27,
       "isActive": true
     },
     {
@@ -480,7 +564,7 @@
         "AI 不自行承諾賠償。",
         "實際個案是否符合補印、退款或其他處理條件，轉人工確認。"
       ],
-      "displayOrder": 24,
+      "displayOrder": 28,
       "isActive": true
     },
     {
@@ -497,7 +581,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 25,
+      "displayOrder": 29,
       "isActive": true
     },
     {
@@ -514,7 +598,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 26,
+      "displayOrder": 30,
       "isActive": true
     },
     {
@@ -531,7 +615,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 27,
+      "displayOrder": 31,
       "isActive": true
     },
     {
@@ -548,7 +632,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 28,
+      "displayOrder": 32,
       "isActive": true
     },
     {
@@ -565,7 +649,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 29,
+      "displayOrder": 33,
       "isActive": true
     },
     {
@@ -582,7 +666,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 30,
+      "displayOrder": 34,
       "isActive": true
     },
     {
@@ -599,7 +683,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 31,
+      "displayOrder": 35,
       "isActive": true
     },
     {
@@ -616,7 +700,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 32,
+      "displayOrder": 36,
       "isActive": true
     },
     {
@@ -633,7 +717,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 33,
+      "displayOrder": 37,
       "isActive": true
     },
     {
@@ -650,7 +734,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 34,
+      "displayOrder": 38,
       "isActive": true
     },
     {
@@ -667,7 +751,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 35,
+      "displayOrder": 39,
       "isActive": true
     },
     {
@@ -684,7 +768,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 36,
+      "displayOrder": 40,
       "isActive": true
     },
     {
@@ -701,7 +785,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 37,
+      "displayOrder": 41,
       "isActive": true
     },
     {
@@ -718,7 +802,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 38,
+      "displayOrder": 42,
       "isActive": true
     },
     {
@@ -735,7 +819,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 39,
+      "displayOrder": 43,
       "isActive": true
     },
     {
@@ -752,7 +836,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 40,
+      "displayOrder": 44,
       "isActive": true
     },
     {
@@ -769,7 +853,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 41,
+      "displayOrder": 45,
       "isActive": true
     },
     {
@@ -786,7 +870,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 42,
+      "displayOrder": 46,
       "isActive": true
     },
     {
@@ -806,7 +890,7 @@
         "不可自行承諾一定可以提前開立發票。",
         "特殊開立或請款需求轉人工確認。"
       ],
-      "displayOrder": 43,
+      "displayOrder": 47,
       "isActive": true
     },
     {
@@ -826,7 +910,7 @@
         "AI 不自行判斷實際訂單目前是否仍可修改。",
         "涉及個案狀態時轉人工確認。"
       ],
-      "displayOrder": 44,
+      "displayOrder": 48,
       "isActive": true
     },
     {
@@ -845,7 +929,7 @@
       "aiNotes": [
         "不自行承諾未建立於系統中的配送方式。"
       ],
-      "displayOrder": 45,
+      "displayOrder": 49,
       "isActive": true
     },
     {
@@ -862,7 +946,7 @@
       "requiresHuman": "視情況",
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 46,
+      "displayOrder": 50,
       "isActive": true
     },
     {
@@ -879,7 +963,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 47,
+      "displayOrder": 51,
       "isActive": true
     },
     {
@@ -899,7 +983,7 @@
         "不替客戶判斷其是否具有合法複印權。",
         "若客戶詢問特定書籍是否可合法複印，請客戶自行確認授權或權利狀態。"
       ],
-      "displayOrder": 48,
+      "displayOrder": 52,
       "isActive": true
     },
     {
@@ -916,7 +1000,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 49,
+      "displayOrder": 53,
       "isActive": true
     },
     {
@@ -933,7 +1017,7 @@
       "requiresHuman": null,
       "priceRelated": false,
       "aiNotes": [],
-      "displayOrder": 50,
+      "displayOrder": 54,
       "isActive": true
     }
   ],

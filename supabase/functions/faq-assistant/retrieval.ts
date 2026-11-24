@@ -1,4 +1,5 @@
 import type { FaqKnowledgeEntry } from "../_shared/faq-knowledge.generated.ts";
+import { faqIntentQuestions } from "../_shared/faq-intents.ts";
 import type { SearchResult } from "./types.ts";
 
 const synonymGroups = [
@@ -47,6 +48,7 @@ export function searchFaqKnowledge(
 ): SearchResult[] {
   const normalizedMessage = normalizeSearchText(message);
   const terms = searchTerms(message);
+  const intentQuestions = faqIntentQuestions(message);
   const limit = options.limit ?? 5;
   const threshold = options.threshold ?? 12;
 
@@ -61,6 +63,11 @@ export function searchFaqKnowledge(
       const matchedTerms: string[] = [];
       let score = question === normalizedMessage ? 160 : 0;
       if (normalizedMessage.length >= 2 && question.includes(normalizedMessage)) score += 80;
+      // 明確對到特定題目的問法，要排在一般名詞（例如「出血」）的題目前面
+      if (intentQuestions.includes(entry.question)) {
+        score += 100;
+        matchedTerms.push(entry.question);
+      }
 
       for (const term of terms) {
         const termScore =

@@ -1,4 +1,5 @@
 import { visibleFaqEntries } from "@/data/faq";
+import { faqIntentQuestions } from "../../supabase/functions/_shared/faq-intents.ts";
 
 export type AssistantAction = "none" | "estimate" | "contact";
 
@@ -13,7 +14,8 @@ export type AssistantReply = {
 
 type AssistantResponse = Partial<AssistantReply> & { success?: boolean; error?: string };
 
-const RETRYABLE_ERRORS = new Set(["AI_TIMEOUT", "SERVICE_UNAVAILABLE"]);
+// 逾時已由後端重試過，前台直接改用 FAQ 備援，不讓客人再等一輪
+const RETRYABLE_ERRORS = new Set(["SERVICE_UNAVAILABLE"]);
 
 function responseErrorCode(status: number, result: AssistantResponse) {
   if (result.error) return result.error;
@@ -51,6 +53,8 @@ function publicFaqFallback(message: string): AssistantReply | null {
   if (/數位燙金|燙金/u.test(normalizedMessage)) terms.add("燙金");
   if (/論文|畢業論文|論文裝訂|論文精裝/u.test(normalizedMessage)) terms.add("論文");
 
+  const intentQuestions = faqIntentQuestions(message);
+
   const match = visibleFaqEntries
     .filter((entry) => entry.aiUsable)
     .map((entry) => {
@@ -58,6 +62,7 @@ function publicFaqFallback(message: string): AssistantReply | null {
       const answer = normalize(entry.answer);
       const subcategory = normalize(entry.subcategory);
       let score = question === normalizedMessage ? 100 : 0;
+      if (intentQuestions.includes(entry.question)) score += 100;
       for (const term of terms) {
         if (question.includes(term)) score += 24 + term.length;
         if (subcategory.includes(term)) score += 14 + term.length;
@@ -72,7 +77,7 @@ function publicFaqFallback(message: string): AssistantReply | null {
   const requiresHuman = Boolean(match.entry.requiresHuman);
   const answer = match.entry.priceRelated
     ? "關於價格，請使用網站的線上估價功能查看可估價品項；若屬企業、大量、客製或資料不足的需求，會由專人進一步確認。"
-    : match.entry.answer;
+    : match.entry.answer.replace(/^### /gm, "");
   return {
     answer,
     sources: [{ id: match.entry.id, question: match.entry.question }],

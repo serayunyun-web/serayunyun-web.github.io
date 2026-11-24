@@ -199,6 +199,15 @@ function QuestionRow({
       <div className="faq-answer-shell" hidden={!isOpen} id={answerId}>
         <div className="faq-answer">
           <AnswerContent answer={faq.answer} />
+          {faq.images?.map((image) => (
+            <figure className="faq-figure" key={image.src}>
+              <a href={withBase(image.src)} rel="noopener" target="_blank">
+                {/* eslint-disable-next-line @next/next/no-img-element -- SVG 示意圖，不需要圖片最佳化 */}
+                <img alt={image.alt} loading="lazy" src={withBase(image.src)} />
+              </a>
+              <figcaption>{image.alt}<span>點圖可放大</span></figcaption>
+            </figure>
+          ))}
           {faq.priceRelated && (
             <p className="faq-price-guidance">
               價格仍須依實際需求確認，請前往 <Link href="/quote">快速查價</Link> 填寫資料。

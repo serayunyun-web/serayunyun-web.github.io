@@ -26,6 +26,17 @@ type GeminiOptions = {
   fetchImpl?: typeof fetch;
 };
 
+/** Gemini 偶爾會卡住不回；把總時間分成兩次嘗試，第一次沒回應就立刻重試。 */
+export async function generateGeminiAnswerWithRetry(options: GeminiOptions) {
+  const attemptTimeoutMs = Math.ceil((options.timeoutMs ?? 8000) / 2);
+  try {
+    return await generateGeminiAnswer({ ...options, timeoutMs: attemptTimeoutMs });
+  } catch (error) {
+    if (!(error instanceof GeminiClientError) || error.code !== "timeout") throw error;
+    return await generateGeminiAnswer({ ...options, timeoutMs: attemptTimeoutMs });
+  }
+}
+
 export async function generateGeminiAnswer({
   apiKey,
   model,
@@ -51,7 +62,7 @@ export async function generateGeminiAnswer({
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: systemInstruction }] },
           contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.2, maxOutputTokens: 384, candidateCount: 1 },
+          generationConfig: { temperature: 0.2, maxOutputTokens: 1024, candidateCount: 1 },
         }),
       },
     );

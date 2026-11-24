@@ -1,6 +1,6 @@
 import { hasValidPublishableKey } from "../_shared/auth.ts";
 import { adminClient } from "../_shared/database.ts";
-import { generateGeminiAnswer } from "./gemini-client.ts";
+import { generateGeminiAnswerWithRetry } from "./gemini-client.ts";
 import { createFaqAssistantHandler } from "./handler.ts";
 import { buildGeminiPrompt, systemInstruction } from "./prompts.ts";
 import { claimFaqAssistantRequest, requestFingerprint } from "./rate-limit.ts";
@@ -35,7 +35,7 @@ const handler = createFaqAssistantHandler({
       dailyLimit,
     });
   },
-  generateAnswer: async ({ message, matches }) => await generateGeminiAnswer({
+  generateAnswer: async ({ message, matches }) => await generateGeminiAnswerWithRetry({
     apiKey: geminiApiKey,
     model: geminiModel,
     systemInstruction,
