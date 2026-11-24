@@ -62,7 +62,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const canManage = roles.includes("admin") || roles.includes("manager");
   return <Context.Provider value={{ session, roles, canManage }}>
     <main className="admin-page page-container">
-      <nav className="admin-nav no-print"><Link href={`${ADMIN_BASE}/`}>後台首頁</Link><span>{session.user.email}（{roles.join("、")}）</span><button className="text-button" onClick={() => supabaseBrowser().auth.signOut()} type="button">登出</button></nav>
+      <nav className="admin-nav no-print"><Link href={`${ADMIN_BASE}/`}>後台首頁</Link><Link href={`${ADMIN_BASE}/analytics/`}>品項分析</Link><span>{session.user.email}（{roles.join("、")}）</span><button className="text-button" onClick={() => supabaseBrowser().auth.signOut()} type="button">登出</button></nav>
       {children}
     </main>
   </Context.Provider>;

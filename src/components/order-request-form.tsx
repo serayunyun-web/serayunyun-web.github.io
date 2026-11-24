@@ -12,6 +12,7 @@ import { saveCheckout } from "@/lib/checkout";
 import { SubmissionError, callPublicFunction, supabaseBrowser } from "@/lib/supabase-public-api";
 import { ProductPicker } from "@/components/product-picker";
 import { LeatherSelect } from "@/components/leather-select";
+import { SlidingGroup } from "@/components/sliding-group";
 import { OTHER_COVER, isDigitalFoilLeather, leatherCode, leatherFoilConflict, leatherPickerFor, validLeatherChoice, wantsDigitalFoil } from "@/lib/leather";
 import { CommonInput, ModeSwitch, PriceBreakdown, ShippingPicker, SpecFields, specSummary, visibleManualFields, type DisabledOptions, type FieldMarks } from "@/components/spec-fields";
 
@@ -247,7 +248,7 @@ export function OrderRequestForm() {
       <section className="order-panel" id="contact-details">
         <div className="order-heading"><p>STEP 03 ／ CONTACT</p><h2>聯絡與配送</h2><span>報價單會寄到你填寫的 Email。</span></div>
         <div className="form-sheet"><div className="quote-field-grid">
-          <fieldset className="quote-field quote-field-wide"><legend>客戶類型<span className="quote-required">必填</span></legend><div className="quote-choice-row">{["個人", "公司行號", "學校或行政單位"].map((option) => <label className="quote-choice" key={option}><input checked={draft.contact.customerType === option} id={option === "個人" ? "contact-customerType" : undefined} name="contact-customerType" onChange={() => setContact("customerType", option)} type="radio" /><span>{option}</span></label>)}</div></fieldset>
+          <fieldset className="quote-field quote-field-wide"><legend>客戶類型<span className="quote-required">必填</span></legend><SlidingGroup className="quote-choice-row" items=":scope > .quote-choice">{["個人", "公司行號", "學校或行政單位"].map((option) => <label className="quote-choice" key={option}><input checked={draft.contact.customerType === option} id={option === "個人" ? "contact-customerType" : undefined} name="contact-customerType" onChange={() => setContact("customerType", option)} type="radio" /><span>{option}</span></label>)}</SlidingGroup></fieldset>
           {[["contactName", "聯絡人姓名", "text", "name"], ["phone", "手機或聯絡電話", "tel", "tel"], ["email", "Email", "email", "email"]].map(([id, label, type, auto]) => <div className="quote-field" key={id}><label htmlFor={`contact-${id}`}>{label}<span className="quote-required">必填</span></label><input autoComplete={auto} id={`contact-${id}`} onChange={(event) => setContact(id, event.target.value)} type={type} value={draft.contact[id] ?? ""} /></div>)}
           {draft.contact.customerType && draft.contact.customerType !== "個人" && <div className="quote-field"><label htmlFor="contact-organization">公司／學校名稱<span className="quote-required">必填</span></label><input autoComplete="organization" id="contact-organization" onChange={(event) => setContact("organization", event.target.value)} value={draft.contact.organization ?? ""} /></div>}
           <div className="quote-field"><label htmlFor="contact-line">LINE ID（選填）</label><input id="contact-line" onChange={(event) => setContact("line", event.target.value)} value={draft.contact.line ?? ""} /></div>

@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "數位燙金介紹", description: "�
 export default function DigitalFoilPage() {
   return <main className="foil-page">
     <section className="section page-container foil-intro">
-      <p className="foil-meta"><Link href="/">最新消息</Link> ／ <time dateTime={digitalFoil.date.replaceAll(".", "-")}>{digitalFoil.date}</time></p>
+      <p className="foil-meta"><Link href="/">首頁</Link> ／ 數位燙金</p>
       <p className="eyebrow">Digital Foil Stamping</p>
       <h1>數位燙金</h1>
       <div className="foil-intro-grid">

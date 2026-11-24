@@ -1,6 +1,11 @@
 export const digitalFoil = {
-  date: "2026.11.18",
   highlights: ["堅固耐刮", "無痕清晰", "快速實惠"],
+  /** 首頁主打區的三個重點 */
+  featurePoints: [
+    { title: "堅固耐刮", description: "不掉色、不脫落" },
+    { title: "細字清晰", description: "小字與線條都銳利" },
+    { title: "免開版", description: "省製版費，少量也划算" },
+  ],
   videoTitle: "堅固性測試影片",
   paragraphs: [
     "【堅固耐刮、無痕清晰、快速實惠】是數位燙金的核心優勢。影片展示實際耐刮與牢固度測試，燙金層不掉色、不脫落，字樣依然清晰銳利。",

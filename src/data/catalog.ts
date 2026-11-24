@@ -109,6 +109,8 @@ const productPhotoCount: Record<string, number> = {
   "butterfly-book": 3,
   "menu-production": 3,
   "screw-contract": 3,
+  "photocopy": 3,
+  "q-rod-hardcover": 3,
 };
 
 const photoPath = (slug: string, key: string) => withBase(`/images/products/${slug}-${key}.webp`);
@@ -126,7 +128,7 @@ const gallery = (slug: string, title: string, tone: CatalogTone): readonly Produ
 
 export const products: readonly Product[] = [
   {
-    // 排在所有產品最前面（displayOrder 5）。尚無正式照片，先用佔位圖。
+    // 排在所有產品最前面（displayOrder 5）。
     id: "prd-photocopy", slug: "photocopy", title: "一般影印",
     description: "黑白、彩色影印，A4、A3 單雙面都能印，上傳檔案就能線上試算下單。",
     categoryIds: ["cat-finishing"], cardImage: cardImageFor("photocopy"), gallery: gallery("photocopy", "一般影印", "brown"),

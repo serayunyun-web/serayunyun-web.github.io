@@ -2,9 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { HomeHero3D } from "@/components/home-hero-3d";
 import { HomeHeroCarousel } from "@/components/home-hero-carousel";
+import { FoilTestVideo } from "@/components/foil-test-video";
 import { HandDrawnTitle } from "@/components/hand-drawn-title";
 import { ProductCard } from "@/components/product-card";
-import { homeNews } from "@/data/home-news";
+import { digitalFoil } from "@/data/digital-foil";
 import { featuredProducts } from "@/data/site";
 import { withBase } from "@/lib/base-path";
 
@@ -58,16 +59,20 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="home-section news-section" aria-labelledby="news-title">
-        <div className="page-container news-layout">
-          <div className="news-heading"><p className="eyebrow">News & Notices</p><h2 id="news-title">最新消息／公告</h2></div>
-          <div className="news-list">
-            {homeNews.slice(0, 3).map((item) => (
-              <article className="news-item" key={item.id}>
-                <time dateTime={item.date.replaceAll(".", "-")}>{item.date}</time>
-                <Link href={item.href}><HandDrawnTitle circle={item.circle} title={item.title} underline={item.underline} /><span aria-hidden="true" className="news-arrow">→</span></Link>
-              </article>
-            ))}
+      <section className="home-section foil-feature-section" aria-labelledby="foil-feature-title">
+        <div className="page-container foil-feature">
+          <FoilTestVideo />
+          <div className="foil-feature-copy">
+            <p className="eyebrow">Digital Foil Stamping｜數位燙金</p>
+            <h2 id="foil-feature-title"><HandDrawnTitle circle="不必開版" title={"不必開版，\n也能燙出精緻細節。"} underline="精緻細節" /></h2>
+            <p className="foil-feature-lead">告別傳統燙金的開版限制，少量製作也能展現細緻光澤，讓客製封面更加靈活。</p>
+            <ul className="foil-feature-points">
+              {digitalFoil.featurePoints.map(({ title, description }) => <li key={title}><strong>{title}</strong><span>{description}</span></li>)}
+            </ul>
+            <div className="foil-feature-actions">
+              <Link className="button foil-feature-primary" href="/news/digital-foil">看完整介紹 <span aria-hidden="true">→</span></Link>
+              <Link className="button foil-feature-secondary" href="/services/samples?foil=digital">看可燙皮革</Link>
+            </div>
           </div>
         </div>
       </section>

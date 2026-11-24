@@ -2,6 +2,7 @@
 
 import { ESTIMATE_DISCLAIMER, MODE_DESIGNER, MODE_SIMPLE, isAutoPriced, isDesigner, motorDistricts, shippingChoices, visiblePricingFields, type Estimate, type PricingField } from "@/lib/pricing";
 import { fieldsByProduct, productFormTypeBySlug, type OrderField } from "@/data/order-options";
+import { SlidingGroup } from "@/components/sliding-group";
 
 type Values = Record<string, string>;
 /** 下單頁欄位標示：carried＝已從查價頁帶入；check＝查價頁沒有、請確認；attention＝依已選規格應該填寫。 */
@@ -27,7 +28,7 @@ function PricingInput({ field, value, onChange, idPrefix, mark, disabled }: { fi
   if (field.options.length <= 4) {
     return <fieldset className={`quote-field quote-field-wide${markClass(mark)}`}><legend>{field.label}<span className="quote-required">必填</span><Mark mark={mark} /></legend>{field.help && <p>{field.help}</p>}
       {reason}
-      <div className="quote-choice-row">{field.options.map((option) => <label className={`quote-choice${off(option) ? " is-disabled" : ""}`} key={option}><input checked={value === option} disabled={off(option)} name={id} onChange={() => onChange(option)} type="radio" /><span>{option}</span></label>)}</div></fieldset>;
+      <SlidingGroup className="quote-choice-row" items=":scope > .quote-choice">{field.options.map((option) => <label className={`quote-choice${off(option) ? " is-disabled" : ""}`} key={option}><input checked={value === option} disabled={off(option)} name={id} onChange={() => onChange(option)} type="radio" /><span>{option}</span></label>)}</SlidingGroup></fieldset>;
   }
   return <div className={`quote-field${markClass(mark)}`}><label htmlFor={id}>{field.label}<span className="quote-required">必填</span><Mark mark={mark} /></label>{field.help && <p>{field.help}</p>}
     {reason}
@@ -39,7 +40,7 @@ function OrderInput({ field, value, onChange, idPrefix, mark }: { field: OrderFi
   const required = field.required && <span className="quote-required">必填</span>;
   if (field.type === "radio" || (field.type === "select" && (field.options?.length ?? 0) <= 4)) {
     return <fieldset className={`quote-field quote-field-wide${markClass(mark)}`}><legend>{field.label}{required}<Mark mark={mark} /></legend>{field.help && <p>{field.help}</p>}
-      <div className="quote-choice-row">{field.options?.map((option) => <label className="quote-choice" key={option}><input checked={value === option} name={id} onChange={() => onChange(option)} type="radio" /><span>{option}</span></label>)}</div></fieldset>;
+      <SlidingGroup className="quote-choice-row" items=":scope > .quote-choice">{field.options?.map((option) => <label className="quote-choice" key={option}><input checked={value === option} name={id} onChange={() => onChange(option)} type="radio" /><span>{option}</span></label>)}</SlidingGroup></fieldset>;
   }
   const shared = { id, value, onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => onChange(event.target.value) };
   return <div className={`quote-field${field.type === "textarea" ? " quote-field-wide" : ""}${markClass(mark)}`}><label htmlFor={id}>{field.label}{required}<Mark mark={mark} /></label>{field.help && <p>{field.help}</p>}
@@ -72,9 +73,9 @@ export function ModeSwitch({ values, onChange }: { values: Values; onChange: (mo
     { id: MODE_SIMPLE, title: "一般客戶", note: "簡單選，一目了然" },
     { id: MODE_DESIGNER, title: "設計師", note: "紙種、內頁張數、單雙面、混合印刷" },
   ];
-  return <div className="mode-switch" role="group" aria-label="填寫模式">
+  return <SlidingGroup className="mode-switch" role="group" aria-label="填寫模式">
     {modes.map((mode) => <button aria-pressed={current === mode.id} key={mode.id} onClick={() => onChange(mode.id)} type="button"><strong>{mode.title}</strong><small>{mode.note}</small></button>)}
-  </div>;
+  </SlidingGroup>;
 }
 
 /** 規格摘要：回傳 [欄位名稱, 值]，供摘要、Email 與工作單使用。 */
@@ -90,7 +91,7 @@ export function specSummary(slug: string, values: Values): [string, string][] {
 export function ShippingPicker({ shippingId, district, onChange, idPrefix }: { shippingId: string; district: string; onChange: (next: { shippingId?: string; district?: string }) => void; idPrefix: string }) {
   const selected = shippingChoices.find((choice) => choice.id === shippingId);
   return <fieldset className="quote-shipping"><legend>配送方式<span className="quote-required">必填</span></legend>
-    <div>{shippingChoices.map((option) => <label key={option.id}><input checked={shippingId === option.id} name={`${idPrefix}-shipping`} onChange={() => onChange({ shippingId: option.id })} type="radio" /><span><strong>{option.label}</strong><small>{option.fee === 0 ? "不加運費" : `${money(option.fee)}／件`}・{option.note}</small></span></label>)}</div>
+    <SlidingGroup items=":scope > label">{shippingChoices.map((option) => <label key={option.id}><input checked={shippingId === option.id} name={`${idPrefix}-shipping`} onChange={() => onChange({ shippingId: option.id })} type="radio" /><span><strong>{option.label}</strong><small>{option.fee === 0 ? "不加運費" : `${money(option.fee)}／件`}・{option.note}</small></span></label>)}</SlidingGroup>
     {selected?.needsDistrict && <div className="quote-field spec-district"><label htmlFor={`${idPrefix}-district`}>配送區域<span className="quote-required">必填</span></label>
       <select id={`${idPrefix}-district`} onChange={(event) => onChange({ district: event.target.value })} value={district}><option value="">請選擇配送區域</option>{motorDistricts.map((item) => <option key={item}>{item}</option>)}</select>
       <p>不在以上區域請改選新竹貨運。</p></div>}

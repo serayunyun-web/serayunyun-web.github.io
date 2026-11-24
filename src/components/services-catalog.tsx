@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { ProductCard } from "@/components/product-card";
 import type { Product, ProductCategory } from "@/data/catalog";
+import { SlidingGroup } from "@/components/sliding-group";
 
 type ServicesCatalogProps = {
   categories: readonly ProductCategory[];
@@ -23,7 +24,7 @@ export function ServicesCatalog({ categories, products, allFilter }: ServicesCat
     <section className="services-catalog-section" aria-labelledby="catalog-title">
       <div className="page-container">
         <div className="category-toolbar" aria-label="產品分類篩選">
-          <div className="category-filter-list" role="group" aria-label="選擇產品分類">
+          <SlidingGroup className="category-filter-list" items=".category-filter" role="group" aria-label="選擇產品分類">
             <button aria-pressed={selectedCategoryId === allFilter.id} className="category-filter" onClick={() => setSelectedCategoryId(allFilter.id)} type="button">
               <strong>{allFilter.name}</strong><small>{products.length}</small>
             </button>
@@ -31,7 +32,7 @@ export function ServicesCatalog({ categories, products, allFilter }: ServicesCat
               const count = products.filter((product) => product.categoryIds.includes(category.id)).length;
               return <button aria-pressed={selectedCategoryId === category.id} className="category-filter" key={category.id} onClick={() => setSelectedCategoryId(category.id)} type="button"><strong>{category.name}</strong><small>{count}</small></button>;
             })}
-          </div>
+          </SlidingGroup>
         </div>
 
         <div className="catalog-result-heading">

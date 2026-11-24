@@ -12,6 +12,7 @@ export function Header() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const isActive = (href: string) => href === "/" ? pathname === href : pathname.startsWith(href);
+  const isCurrent = (href: string) => pathname.replace(/\/$/, "") === href;
 
   return (
     <header className="site-header">
@@ -38,7 +39,14 @@ export function Header() {
         <button aria-expanded={isOpen} aria-label={isOpen ? "關閉選單" : "開啟選單"} className={`menu-button${isOpen ? " open" : ""}`} onClick={() => setIsOpen((current) => !current)} type="button"><span /></button>
       </div>
       <nav className={`mobile-nav${isOpen ? " open" : ""}`} aria-label="行動版導覽">
-        {navigation.map((item) => (
+        {navigation.map((item) => item.children ? (
+          <div className="mobile-nav-group" key={item.href}>
+            <span className="mobile-nav-heading">{item.label}</span>
+            {item.children.map((child) => (
+              <Link className={`nav-link mobile-nav-sub${isCurrent(child.href) ? " active" : ""}`} href={child.href} key={child.href} onClick={() => setIsOpen(false)}>{child.label}</Link>
+            ))}
+          </div>
+        ) : (
           <Link className={`nav-link${item.emphasis ? " nav-order" : ""}${isActive(item.href) ? " active" : ""}`} href={item.href} key={item.href} onClick={() => setIsOpen(false)}>{item.label}</Link>
         ))}
         <SocialLinks className="mobile-social" />
@@ -52,7 +60,7 @@ type SliderBox = { x: number; width: number; visible: boolean };
 /** 桌面版導覽：膠囊滑塊跟著滑鼠移動，離開選單後回到目前頁面（「線上下單」不在其中）。 */
 function SlidingNav({ isActive, pathname }: { isActive: (href: string) => boolean; pathname: string }) {
   const items = navigation.filter((item) => !item.emphasis);
-  const linkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const linkRefs = useRef<(HTMLElement | null)[]>([]);
   const [hovered, setHovered] = useState<number | null>(null);
   const [box, setBox] = useState<SliderBox>({ x: 0, width: 0, visible: false });
   const [animate, setAnimate] = useState(false);
@@ -78,17 +86,37 @@ function SlidingNav({ isActive, pathname }: { isActive: (href: string) => boolea
   return (
     <div className={`nav-track${animate ? " is-animated" : ""}`} onPointerLeave={() => setHovered(null)}>
       <span aria-hidden="true" className={`nav-slider${box.visible ? " visible" : ""}`} style={{ transform: `translateX(${box.x}px)`, width: box.width }} />
-      {items.map((item, index) => (
-        <Link
-          className={`nav-link${isActive(item.href) ? " active" : ""}${index === target ? " on-slider" : ""}`}
-          href={item.href}
-          key={item.href}
-          onBlur={() => setHovered(null)}
-          onFocus={() => setHovered(index)}
-          onPointerEnter={() => setHovered(index)}
-          ref={(node) => { linkRefs.current[index] = node; }}
-        >{item.label}</Link>
-      ))}
+      {items.map((item, index) => {
+        const linkClass = `nav-link${isActive(item.href) ? " active" : ""}${index === target ? " on-slider" : ""}`;
+        if (!item.children) return (
+          <Link
+            className={linkClass}
+            href={item.href}
+            key={item.href}
+            onBlur={() => setHovered(null)}
+            onFocus={() => setHovered(index)}
+            onPointerEnter={() => setHovered(index)}
+            ref={(node) => { linkRefs.current[index] = node; }}
+          >{item.label}</Link>
+        );
+        return (
+          <div
+            className="nav-dropdown"
+            key={item.href}
+            onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setHovered(null); }}
+            onFocus={() => setHovered(index)}
+            onPointerEnter={() => setHovered(index)}
+            ref={(node) => { linkRefs.current[index] = node; }}
+          >
+            <Link aria-haspopup="true" className={linkClass} href={item.href}>{item.label}<span aria-hidden="true" className="nav-caret" /></Link>
+            <div className="nav-submenu">
+              {item.children.map((child) => (
+                <Link className={pathname.replace(/\/$/, "") === child.href ? "active" : undefined} href={child.href} key={child.href}>{child.label}</Link>
+              ))}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

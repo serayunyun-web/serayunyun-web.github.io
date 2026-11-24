@@ -33,7 +33,7 @@ const slides = [
     label: "數位燙金",
     title: <>數位燙金，<br />讓<span>精緻</span>更輕鬆實現。</>,
     description: "無須製作傳統燙金版，也能在皮革精裝封面呈現細膩的金屬光澤。省去製版成本、縮短製作準備時間，以更經濟、靈活的方式，成就每一份作品的精緻質感。",
-    primary: { label: "了解數位燙金", href: "/business#partnership-service" },
+    primary: { label: "了解數位燙金", href: "/news/digital-foil" },
     secondary: { label: "提出客製需求", href: "/order" },
   },
 ] as const;

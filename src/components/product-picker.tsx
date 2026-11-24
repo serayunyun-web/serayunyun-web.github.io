@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { Product } from "@/data/catalog";
 import { isAutoPriced } from "@/lib/pricing";
 
@@ -22,10 +22,43 @@ function PriceTag({ slug }: { slug: string }) {
   return <small className={`pick-tag ${auto ? "auto" : "manual"}`}>{auto ? "線上試算" : "專人報價"}</small>;
 }
 
+/**
+ * 邊框聚光網格：滑鼠在網格內移動時，為每張卡片寫入「游標相對於該卡片」的座標（--x、--y），
+ * CSS 依此在邊框與卡片內部畫出柔和光暈；離開網格後光暈淡出。只對滑鼠生效，觸控不觸發。
+ */
+function useSpotlight() {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const frame = useRef(0);
+
+  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse") return;
+    const { clientX, clientY } = event;
+    cancelAnimationFrame(frame.current);
+    frame.current = requestAnimationFrame(() => {
+      const grid = gridRef.current;
+      if (!grid) return;
+      grid.classList.add("is-lit");
+      for (const card of grid.children as HTMLCollectionOf<HTMLElement>) {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty("--x", `${clientX - rect.left}px`);
+        card.style.setProperty("--y", `${clientY - rect.top}px`);
+      }
+    });
+  };
+
+  const onPointerLeave = () => {
+    cancelAnimationFrame(frame.current);
+    gridRef.current?.classList.remove("is-lit");
+  };
+
+  return { ref: gridRef, onPointerMove, onPointerLeave };
+}
+
 /** 查價與下單共用的產品選擇：小卡片網格，選定後收合成一列。 */
 export function ProductPicker({ products, selectedSlug, onChoose, children }: ProductPickerProps) {
   const [expanded, setExpanded] = useState(false);
   const selected = products.find((item) => item.slug === selectedSlug);
+  const spotlight = useSpotlight();
 
   if (selected && !expanded) {
     return <div className="pick-selected">
@@ -37,7 +70,7 @@ export function ProductPicker({ products, selectedSlug, onChoose, children }: Pr
 
   return <div className="pick-root">
     {children}
-    <div className="pick-grid">
+    <div className="pick-grid spotlight-grid" {...spotlight}>
       {products.map((item) => {
         const isSelected = item.slug === selectedSlug;
         return <button aria-pressed={isSelected} className="pick-card" key={item.id} onClick={() => { setExpanded(false); onChoose(item.slug); }} type="button">

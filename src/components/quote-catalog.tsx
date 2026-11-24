@@ -6,6 +6,7 @@ import { activeCategories, orderableProducts } from "@/data/catalog";
 import { PHOTOCOPY_SLUG, calculateEstimate } from "@/lib/pricing";
 import { handOffQuote } from "@/lib/order-draft";
 import { ProductPicker } from "@/components/product-picker";
+import { SlidingGroup } from "@/components/sliding-group";
 import { ModeSwitch, PriceBreakdown, ShippingPicker, SpecFields, specSummary } from "@/components/spec-fields";
 
 type Values = Record<string, string>;
@@ -48,10 +49,10 @@ export function QuoteCatalog() {
     <section className="quote-directory page-container" aria-labelledby="quote-products-heading">
       <div className="quote-section-heading"><div><span>01</span><h2 id="quote-products-heading">選擇一項產品</h2></div></div>
       <ProductPicker onChoose={chooseProduct} products={products} selectedSlug={productSlug}>
-        <div className="quote-category-list" role="group" aria-label="產品分類篩選">
+        <SlidingGroup className="quote-category-list" role="group" aria-label="產品分類篩選">
           <button aria-pressed={categoryId === "all"} onClick={() => setCategoryId("all")} type="button"><span>全部產品</span><small>{orderableProducts.length}</small></button>
           {activeCategories.map((category) => <button aria-pressed={categoryId === category.id} key={category.id} onClick={() => setCategoryId(category.id)} type="button"><span>{category.name}</span><small>{orderableProducts.filter((item) => item.categoryIds.includes(category.id)).length}</small></button>)}
-        </div>
+        </SlidingGroup>
       </ProductPicker>
     </section>
 

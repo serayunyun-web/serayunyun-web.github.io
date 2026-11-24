@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { leatherSeries, materialSamples, sampleKindNames, type LeatherSeriesId, type MaterialSample, type SampleKind } from "@/data/material-samples";
+import { leatherSeries, materialSamples, type LeatherSeriesId, type MaterialSample } from "@/data/material-samples";
+import { SlidingGroup } from "@/components/sliding-group";
 import { withBase } from "@/lib/base-path";
 
 type FoilFilter = "all" | "digital" | "traditional";
@@ -26,14 +27,12 @@ export function SampleBrowser() {
   const params = useSearchParams();
   const returnTo = params.get("return");
   const selectMode = Boolean(returnTo);
-  const [kind, setKind] = useState<SampleKind>(params.get("select") === "corner" ? "corner" : "cover");
-  const [foil, setFoil] = useState<FoilFilter>("all");
+  const [foil, setFoil] = useState<FoilFilter>(() => foilFilters.find(({ id }) => id === params.get("foil"))?.id ?? "all");
   const [series, setSeries] = useState<LeatherSeriesId | "all">("all");
   const [active, setActive] = useState<MaterialSample | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const covers = useMemo(() => materialSamples.filter((sample) => sample.kind === "cover" && sample.enabled), []);
-  const corners = materialSamples.filter((sample) => sample.kind === "corner" && sample.enabled);
   const visible = covers.filter((sample) => matchesFoil(sample, foil) && (series === "all" || sample.series === series));
   const groups = leatherSeries.map((item) => ({ ...item, samples: visible.filter((sample) => sample.series === item.id) })).filter((group) => group.samples.length > 0);
 
@@ -47,19 +46,14 @@ export function SampleBrowser() {
   const selectSample = (sample: MaterialSample) => {
     try {
       const draft = JSON.parse(localStorage.getItem(ORDER_DRAFT_KEY) || "{}") as { samples?: Record<string, string> };
-      const field = sample.kind === "cover" ? "coverSample" : "corner";
-      localStorage.setItem(ORDER_DRAFT_KEY, JSON.stringify({ ...draft, samples: { ...draft.samples, [field]: `${sample.name}（${sample.code}）` } }));
+      localStorage.setItem(ORDER_DRAFT_KEY, JSON.stringify({ ...draft, samples: { ...draft.samples, coverSample:`${sample.name}（${sample.code}）` } }));
     } catch { /* 草稿無法解析時仍安全返回下單頁 */ }
     window.location.assign(withBase(returnTo || "/order"));
   };
 
   return (
     <section className="section page-container sample-browser">
-      <div className="sample-tabs" role="tablist" aria-label="樣品分類">
-        {(["cover", "corner"] as const).map((id) => <button aria-selected={kind === id} key={id} onClick={() => setKind(id)} role="tab" type="button">{sampleKindNames[id]}</button>)}
-      </div>
-
-      {kind === "cover" ? <>
+      <>
         <div className="foil-guide">
           <article className="foil-guide-card foil-guide-digital">
             <FoilBadge digital />
@@ -74,13 +68,13 @@ export function SampleBrowser() {
         </div>
 
         <div className="sample-filters">
-          <div className="sample-filter-row" role="group" aria-label="依燙金方式篩選">
+          <SlidingGroup className="sample-filter-row" role="group" aria-label="依燙金方式篩選">
             {foilFilters.map((item) => <button aria-pressed={foil === item.id} key={item.id} onClick={() => setFoil(item.id)} type="button">{item.label}<small>{covers.filter((sample) => matchesFoil(sample, item.id)).length}</small></button>)}
-          </div>
-          <div className="sample-filter-row" role="group" aria-label="依系列篩選">
+          </SlidingGroup>
+          <SlidingGroup className="sample-filter-row" role="group" aria-label="依系列篩選">
             <button aria-pressed={series === "all"} onClick={() => setSeries("all")} type="button">全部系列</button>
             {leatherSeries.map((item) => <button aria-pressed={series === item.id} key={item.id} onClick={() => setSeries(item.id)} type="button">{item.name}<small>{item.prefix}</small></button>)}
-          </div>
+          </SlidingGroup>
         </div>
 
         <p className="sample-result-count" aria-live="polite">共 {visible.length} 款</p>
@@ -101,7 +95,7 @@ export function SampleBrowser() {
             </div>
           </section>
         ))}
-      </> : corners.length === 0 && <div className="sample-note"><strong>護角樣品請洽專人提供</strong></div>}
+      </>
 
       <div className="sample-footer">
         <p>圖片可能因螢幕顯色產生差異，實際顏色與紋理以實體樣本為準。若有特殊材質、顏色或設計需求，建議先進行測試。</p>
